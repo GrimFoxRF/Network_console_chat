@@ -1,17 +1,17 @@
-//Реализация вспомогательных методов
+п»ї//Р РµР°Р»РёР·Р°С†РёСЏ РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹С… РјРµС‚РѕРґРѕРІ
 #include <iostream>
 #include <ctime>
 #include <iomanip>
 #include <sstream>
 #include <string>
 #include <fstream>
-#include <filesystem> //требуется С++17 и выше
+#include <filesystem> //С‚СЂРµР±СѓРµС‚СЃСЏ РЎ++17 Рё РІС‹С€Рµ
 #include "Utility.h"
 #include <unordered_map>
 
 namespace fs = std::filesystem;
 
-//Установка разрешения доступа к файлам
+//РЈСЃС‚Р°РЅРѕРІРєР° СЂР°Р·СЂРµС€РµРЅРёСЏ РґРѕСЃС‚СѓРїР° Рє С„Р°Р№Р»Р°Рј
 void SetFilePermissions(const std::string& filePath)
 {
 	fs::perms permissions = fs::perms::owner_read | fs::perms::owner_write;
@@ -22,7 +22,7 @@ void SetFilePermissions(const std::string& filePath)
 	}
 }
 
-//функции для отображения даты в главном меню
+//С„СѓРЅРєС†РёРё РґР»СЏ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РґР°С‚С‹ РІ РіР»Р°РІРЅРѕРј РјРµРЅСЋ
 std::string getCurrentTime() 
 {
 	struct tm newtime;
@@ -59,11 +59,11 @@ void Settings::loadSettingsFromFile(const std::string& filename)
             }
         }
         file.close();
-        std::cout << "Настройки успешно загружены из файла." << std::endl;
+        std::cout << "РќР°СЃС‚СЂРѕР№РєРё СѓСЃРїРµС€РЅРѕ Р·Р°РіСЂСѓР¶РµРЅС‹ РёР· С„Р°Р№Р»Р°." << std::endl;
     }
     else 
     {
-        std::cerr << "Файл с настройками не найден. \nНовый файл создан значения установлены по умолчанию." << std::endl;
+        std::cerr << "Р¤Р°Р№Р» СЃ РЅР°СЃС‚СЂРѕР№РєР°РјРё РЅРµ РЅР°Р№РґРµРЅ. \nРќРѕРІС‹Р№ С„Р°Р№Р» СЃРѕР·РґР°РЅ Р·РЅР°С‡РµРЅРёСЏ СѓСЃС‚Р°РЅРѕРІР»РµРЅС‹ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ." << std::endl;
         std::ofstream newFile(filename);
         if (newFile.is_open())
         {
@@ -71,11 +71,11 @@ void Settings::loadSettingsFromFile(const std::string& filename)
             newFile << "PORT=7777\n";
             newFile << "MESSAGE_LENGTH=1024\n";
             newFile.close();
-            std::cout << "Файл с настройками успешно создан." << std::endl;
+            std::cout << "Р¤Р°Р№Р» СЃ РЅР°СЃС‚СЂРѕР№РєР°РјРё СѓСЃРїРµС€РЅРѕ СЃРѕР·РґР°РЅ." << std::endl;
         }
         else
         {
-            std::cerr << "Ошибка при создании файла с настройками." << std::endl;
+            std::cerr << "РћС€РёР±РєР° РїСЂРё СЃРѕР·РґР°РЅРёРё С„Р°Р№Р»Р° СЃ РЅР°СЃС‚СЂРѕР№РєР°РјРё." << std::endl;
         }
     }
 }
@@ -90,11 +90,11 @@ void Settings::saveSettingsToFile(const std::string& filename)
             file << entry.first << "=" << entry.second << "\n";
         }
         file.close();
-        std::cout << "Настройки успешно сохранены в файл." << std::endl;
+        std::cout << "РќР°СЃС‚СЂРѕР№РєРё СѓСЃРїРµС€РЅРѕ СЃРѕС…СЂР°РЅРµРЅС‹ РІ С„Р°Р№Р»." << std::endl;
     }
     else
     {
-        std::cerr << "Ошибка при сохранении настроек в файл." << std::endl;
+        std::cerr << "РћС€РёР±РєР° РїСЂРё СЃРѕС…СЂР°РЅРµРЅРёРё РЅР°СЃС‚СЂРѕРµРє РІ С„Р°Р№Р»." << std::endl;
     }
 }
 

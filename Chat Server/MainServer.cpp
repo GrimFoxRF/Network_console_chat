@@ -1,4 +1,4 @@
-//Сервер сетевого чата
+п»ї//РЎРµСЂРІРµСЂ СЃРµС‚РµРІРѕРіРѕ С‡Р°С‚Р°
 #include <iostream>
 #include <winsock2.h>
 #include <Windows.h>
@@ -11,31 +11,31 @@ int main()
 	SetConsoleOutputCP(1251);
 	setlocale(LC_ALL, "Russian");
 
-	Chat chat; //объект чат создан
-	DataBase db; //объект база данных создана
+	Chat chat; //РѕР±СЉРµРєС‚ С‡Р°С‚ СЃРѕР·РґР°РЅ
+	DataBase db; //РѕР±СЉРµРєС‚ Р±Р°Р·Р° РґР°РЅРЅС‹С… СЃРѕР·РґР°РЅР°
 	Settings settings;
 
-	settings.loadSettingsFromFile("settings.txt"); //загрузка настроек
+	settings.loadSettingsFromFile("settings.txt"); //Р·Р°РіСЂСѓР·РєР° РЅР°СЃС‚СЂРѕРµРє
 	std::string portStr = settings.getSetting("PORT");
 	int port = std::stoi(portStr);
 
-	NetworkServer server(port); //объект сервер создан
+	NetworkServer server(port); //РѕР±СЉРµРєС‚ СЃРµСЂРІРµСЂ СЃРѕР·РґР°РЅ
 
-	chat.start(); //запуск чата
-	db.dataBaseConnect();//подключение к базе данных
-	db.resetAllUsersStatus();//устанавливаем статус всех пользователей = offline
+	chat.start(); //Р·Р°РїСѓСЃРє С‡Р°С‚Р°
+	db.dataBaseConnect();//РїРѕРґРєР»СЋС‡РµРЅРёРµ Рє Р±Р°Р·Рµ РґР°РЅРЅС‹С…
+	db.resetAllUsersStatus();//СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј СЃС‚Р°С‚СѓСЃ РІСЃРµС… РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№ = offline
 
-	while (chat.serverWork()) //основной цикл программы
+	while (chat.serverWork()) //РѕСЃРЅРѕРІРЅРѕР№ С†РёРєР» РїСЂРѕРіСЂР°РјРјС‹
 	{
-		chat.showMainMenu(db); //Главное меню сервера
+		chat.showMainMenu(db); //Р“Р»Р°РІРЅРѕРµ РјРµРЅСЋ СЃРµСЂРІРµСЂР°
 		while (chat.getAdminOnline())
 		{
-			chat.showServerMenu(db, settings); //меню управления сервером
+			chat.showServerMenu(db, settings); //РјРµРЅСЋ СѓРїСЂР°РІР»РµРЅРёСЏ СЃРµСЂРІРµСЂРѕРј
 		}
 	}
 
-	server.stopServer(); //закрытие сервера
-	db.dataBaseDisconnect();//закрытие базы данных
+	server.stopServer(); //Р·Р°РєСЂС‹С‚РёРµ СЃРµСЂРІРµСЂР°
+	db.dataBaseDisconnect();//Р·Р°РєСЂС‹С‚РёРµ Р±Р°Р·С‹ РґР°РЅРЅС‹С…
 
 	return 0;
 }

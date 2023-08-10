@@ -1,4 +1,4 @@
-//Меню чата и функции
+п»ї//РњРµРЅСЋ С‡Р°С‚Р° Рё С„СѓРЅРєС†РёРё
 #pragma once
 #include <string>
 #include <vector>
@@ -20,12 +20,12 @@ public:
 	std::string setCurrentUser(const std::string& login);
 	std::string getCurrentUser() { return _currentUser; }
 
-	void serverStart(NetworkServer& server); //запуск сетевых функций
+	void serverStart(NetworkServer& server); //Р·Р°РїСѓСЃРє СЃРµС‚РµРІС‹С… С„СѓРЅРєС†РёР№
 
-	void showMainMenu(DataBase& db); // Главное меню
-	void showLoginMenu(DataBase& db); // Меню входа пользователя
-	void showServerMenu(DataBase& db, Settings& settings); //Меню чата, с выбором действий
-	void showSettingsMenu(Settings& settings);//меню настроек сервера
+	void showMainMenu(DataBase& db); // Р“Р»Р°РІРЅРѕРµ РјРµРЅСЋ
+	void showLoginMenu(DataBase& db); // РњРµРЅСЋ РІС…РѕРґР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
+	void showServerMenu(DataBase& db, Settings& settings); //РњРµРЅСЋ С‡Р°С‚Р°, СЃ РІС‹Р±РѕСЂРѕРј РґРµР№СЃС‚РІРёР№
+	void showSettingsMenu(Settings& settings);//РјРµРЅСЋ РЅР°СЃС‚СЂРѕРµРє СЃРµСЂРІРµСЂР°
 
 	bool getAdminOnline() const { return _adminOnline; }
 

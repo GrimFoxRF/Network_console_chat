@@ -1,4 +1,4 @@
-//Вспомогательные методы
+п»ї//Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ РјРµС‚РѕРґС‹
 #pragma once
 #include<iostream>
 #include <exception>
@@ -7,13 +7,13 @@
 #include <string>
 #include <unordered_map>
 
-//Исключения неверный логин и имя
+//РСЃРєР»СЋС‡РµРЅРёСЏ РЅРµРІРµСЂРЅС‹Р№ Р»РѕРіРёРЅ Рё РёРјСЏ
 class loginException : public std::exception
 {
 public:
 	const char* what() const noexcept override
 	{
-		return "ОШИБКА: логин занят";
+		return "РћРЁРР‘РљРђ: Р»РѕРіРёРЅ Р·Р°РЅСЏС‚";
 	}
 };
 class nameException : public std::exception
@@ -21,25 +21,25 @@ class nameException : public std::exception
 public:
 	const char* what() const noexcept override
 	{
-		return "ОШИБКА: имя занято";
+		return "РћРЁРР‘РљРђ: РёРјСЏ Р·Р°РЅСЏС‚Рѕ";
 	}
 };
 
-void SetFilePermissions(const std::string& filePath); //Установка разрешения доступа к файлам
+void SetFilePermissions(const std::string& filePath); //РЈСЃС‚Р°РЅРѕРІРєР° СЂР°Р·СЂРµС€РµРЅРёСЏ РґРѕСЃС‚СѓРїР° Рє С„Р°Р№Р»Р°Рј
 
-//Служебные методы для получения даты и времени системы
+//РЎР»СѓР¶РµР±РЅС‹Рµ РјРµС‚РѕРґС‹ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РґР°С‚С‹ Рё РІСЂРµРјРµРЅРё СЃРёСЃС‚РµРјС‹
 std::string getCurrentTime();
 
 class Settings {
 private:
 
-    std::unordered_map<std::string, std::string> settings; // Хранение настроек
+    std::unordered_map<std::string, std::string> settings; // РҐСЂР°РЅРµРЅРёРµ РЅР°СЃС‚СЂРѕРµРє
 
 public:
     
-    void loadSettingsFromFile(const std::string& filename);//метод для загрузки настроек из файла
-	void saveSettingsToFile(const std::string& filename);//сохранение настроек в файл
+    void loadSettingsFromFile(const std::string& filename);//РјРµС‚РѕРґ РґР»СЏ Р·Р°РіСЂСѓР·РєРё РЅР°СЃС‚СЂРѕРµРє РёР· С„Р°Р№Р»Р°
+	void saveSettingsToFile(const std::string& filename);//СЃРѕС…СЂР°РЅРµРЅРёРµ РЅР°СЃС‚СЂРѕРµРє РІ С„Р°Р№Р»
 
-    std::string getSetting(const std::string& key);//получение значения настройки по ключу
-    void setSetting(const std::string& key, const std::string& value) {settings[key] = value;}//изменение значения настройки по ключу
+    std::string getSetting(const std::string& key);//РїРѕР»СѓС‡РµРЅРёРµ Р·РЅР°С‡РµРЅРёСЏ РЅР°СЃС‚СЂРѕР№РєРё РїРѕ РєР»СЋС‡Сѓ
+    void setSetting(const std::string& key, const std::string& value) {settings[key] = value;}//РёР·РјРµРЅРµРЅРёРµ Р·РЅР°С‡РµРЅРёСЏ РЅР°СЃС‚СЂРѕР№РєРё РїРѕ РєР»СЋС‡Сѓ
 };
