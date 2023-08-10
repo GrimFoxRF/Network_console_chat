@@ -2,6 +2,7 @@
 #include <iostream>
 #include <mysql.h>
 #include <mutex>
+#include <shared_mutex>
 
 class DataBase {
 private:
@@ -10,6 +11,7 @@ private:
 	MYSQL_ROW row;
 
 	std::mutex dbMutex; //мьютекс для защиты доступа к данным базы данных
+	std::shared_mutex sharedMutex; //разделяемая блокировка
 
 	void createDataBase();//создание новой базы данных, если не найдена старая
 	void createTables();//создание таблиц, если они отсутствуют

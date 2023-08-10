@@ -245,6 +245,8 @@ bool DataBase::checkUserPassword(const std::string& password)
 //проверка статуса блокировки
 bool DataBase::isBanned(const std::string& login)
 {
+    std::shared_lock<std::shared_mutex> lock(sharedMutex); //Блокируем на время чтение данных
+
     std::string query = "SELECT isbanned FROM users WHERE login = '" + login + "';";
 
     if (mysql_query(&mysql, query.c_str()))
@@ -356,7 +358,8 @@ bool DataBase::checkNameExistsInDB(const std::string& name)
 //добавление пользователя в БД
 bool DataBase::addNewUser(const std::string& login, const std::string& password, const std::string& name)
 {
-    std::lock_guard<std::mutex> lock(dbMutex); //мьютекс перед выполнением операции
+    std::unique_lock<std::shared_mutex> lock(sharedMutex); //мьютекс перед выполнением операции записи
+
     std::string query = "INSERT INTO users (login, password, name) VALUES ('" + login + "', '" + password + "', '" + name + "')";
 
     if (mysql_query(&mysql, query.c_str()) == 0) {
@@ -371,6 +374,8 @@ bool DataBase::addNewUser(const std::string& login, const std::string& password,
 //список пользователей и их статус
 std::string DataBase::takeAllUsersNameStatus()
 {
+    std::shared_lock<std::shared_mutex> lock(sharedMutex); //Блокируем на время чтение данных
+
     std::string allUsersData; 
 
     std::string query = "SELECT name, online FROM users WHERE isbanned = 0";
@@ -408,6 +413,8 @@ std::string DataBase::takeAllUsersNameStatus()
 //список пользователей и их статус, статус блокировки
 std::string DataBase::takeAllUsersNameStatusIsBann()
 {
+    std::shared_lock<std::shared_mutex> lock(sharedMutex); //Блокируем на время чтение данных
+
     std::string allUsersData; 
 
     std::string query = "SELECT name, online, isbanned FROM users";
@@ -446,7 +453,7 @@ std::string DataBase::takeAllUsersNameStatusIsBann()
 //изменение статуса блокировки пользователя
 void DataBase::setBannStatus(const std::string& name, bool bann)
 {
-    std::lock_guard<std::mutex> lock(dbMutex); //мьютекс перед выполнением операции
+    std::unique_lock<std::shared_mutex> lock(sharedMutex); //мьютекс перед выполнением операции записи
 
     int status = bann ? 1 : 0;
 
@@ -466,7 +473,7 @@ void DataBase::setBannStatus(const std::string& name, bool bann)
 //изменение статуса пользователя
 void DataBase::setUserStatus(const std::string& login, bool online)
 {
-    std::lock_guard<std::mutex> lock(dbMutex); //мьютекс перед выполнением операции
+    std::unique_lock<std::shared_mutex> lock(sharedMutex); //мьютекс перед выполнением операции записи
 
     int status = online ? 1 : 0;
 
@@ -502,7 +509,7 @@ void DataBase::resetAllUsersStatus()
 //добавление сообщения для всех в БД
 void DataBase::addMessageToAll(const std::string& from, const std::string& to, const std::string& text, bool toAll)
 {
-    std::lock_guard<std::mutex> lock(dbMutex); //мьютекс перед выполнением операции
+    std::unique_lock<std::shared_mutex> lock(sharedMutex); //мьютекс перед выполнением операции записи
 
     // Создаем запрос для добавления нового сообщения в таблицу "messages"
     std::string query = "INSERT INTO messages (from_id, to_id, text, to_all) VALUES ('" + from + "', '" + to + "', '" + text + "', " + "1" + ")";
@@ -520,7 +527,7 @@ void DataBase::addMessageToAll(const std::string& from, const std::string& to, c
 //добавление сообщения для пользователя в БД
 void DataBase::addMessageToDB(const std::string& from, const std::string& to, const std::string& text)
 {
-    std::lock_guard<std::mutex> lock(dbMutex); //мьютекс перед выполнением операции
+    std::unique_lock<std::shared_mutex> lock(sharedMutex); //мьютекс перед выполнением операции записи
 
     std::string query = "INSERT INTO messages (from_id, to_id, text) VALUES ('" + from + "', '" + to + "', '" + text + "')";
     if (mysql_query(&mysql, query.c_str()) == 0)
@@ -536,6 +543,8 @@ void DataBase::addMessageToDB(const std::string& from, const std::string& to, co
 //вывод из БД сообщения для всех
 std::string DataBase::loadMessagesToAll()
 {
+    std::shared_lock<std::shared_mutex> lock(sharedMutex); //Блокируем на время чтение данных
+
     std::string messages;
 
     std::string query = "SELECT timestamp, from_id, text FROM messages WHERE to_all = 1";
@@ -568,6 +577,8 @@ std::string DataBase::loadMessagesToAll()
 //вывод из бд сообщений от и для пользователя
 std::string DataBase::loadMessagesToUser(const std::string& to)
 {
+    std::shared_lock<std::shared_mutex> lock(sharedMutex); //Блокируем на время чтение данных
+
     std::string messages;
 
     std::string query = "SELECT timestamp, from_id, to_id, text FROM messages WHERE (from_id = '" + to + "' OR to_id = '" + to + "') AND to_all = 0 "
@@ -605,6 +616,8 @@ std::string DataBase::loadMessagesToUser(const std::string& to)
 //выводит содержимое таблицы users
 void DataBase::showAllUsers()
 {
+    std::shared_lock<std::shared_mutex> lock(sharedMutex); //Блокируем на время чтение данных
+
     mysql_query(&mysql, "SELECT * FROM users"); //Делаем запрос к таблице
 
     //Выводим все что есть в базе через цикл
