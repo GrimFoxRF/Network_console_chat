@@ -1,42 +1,42 @@
-#include <iostream>
+п»ї#include <iostream>
 #include <sstream>
 #include <mysql.h>
 #include "DataBase.h"
 #include <filesystem>
 #include <string>
 
-//создание БД если нужно
+//СЃРѕР·РґР°РЅРёРµ Р‘Р” РµСЃР»Рё РЅСѓР¶РЅРѕ
 void DataBase::createDataBase()
 {
 	if (mysql_select_db(&mysql, "chat_database") == 0) {
-		std::cout << "База данных готова к работе" << std::endl;
+		std::cout << "Р‘Р°Р·Р° РґР°РЅРЅС‹С… РіРѕС‚РѕРІР° Рє СЂР°Р±РѕС‚Рµ" << std::endl;
 		return;
 	}
 
 	if (mysql_query(&mysql, "CREATE DATABASE chat_database") == 0) {
-		std::cout << "База данных отсутствует. Создана новая база данных" << std::endl;
+		std::cout << "Р‘Р°Р·Р° РґР°РЅРЅС‹С… РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚. РЎРѕР·РґР°РЅР° РЅРѕРІР°СЏ Р±Р°Р·Р° РґР°РЅРЅС‹С…" << std::endl;
 	}
 	else {
-		std::cout << "ОШИБКА: Не удалось создать базу данных" << mysql_error(&mysql) << std::endl;
+		std::cout << "РћРЁРР‘РљРђ: РќРµ СѓРґР°Р»РѕСЃСЊ СЃРѕР·РґР°С‚СЊ Р±Р°Р·Сѓ РґР°РЅРЅС‹С…" << mysql_error(&mysql) << std::endl;
 	}
 }
-//создание таблиц если нужно
+//СЃРѕР·РґР°РЅРёРµ С‚Р°Р±Р»РёС† РµСЃР»Рё РЅСѓР¶РЅРѕ
 void DataBase::createTables()
 {
-    // Проверка наличия таблиц users и messages
+    // РџСЂРѕРІРµСЂРєР° РЅР°Р»РёС‡РёСЏ С‚Р°Р±Р»РёС† users Рё messages
     const char* checkTablesQuery = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES "
                                    "WHERE TABLE_SCHEMA = 'chat_database' "
                                    "AND TABLE_NAME IN ('users', 'messages')";
 
     if (mysql_query(&mysql, checkTablesQuery) != 0) {
-        std::cout << "Ошибка: не удалось проверить таблицы" << mysql_error(&mysql) << std::endl;
+        std::cout << "РћС€РёР±РєР°: РЅРµ СѓРґР°Р»РѕСЃСЊ РїСЂРѕРІРµСЂРёС‚СЊ С‚Р°Р±Р»РёС†С‹" << mysql_error(&mysql) << std::endl;
         return;
     }
 
     res = mysql_store_result(&mysql);
 
     if (res == nullptr) {
-        std::cout << "Ошибка: не удалось получить результат запроса" << mysql_error(&mysql) << std::endl;
+        std::cout << "РћС€РёР±РєР°: РЅРµ СѓРґР°Р»РѕСЃСЊ РїРѕР»СѓС‡РёС‚СЊ СЂРµР·СѓР»СЊС‚Р°С‚ Р·Р°РїСЂРѕСЃР°" << mysql_error(&mysql) << std::endl;
         return;
     }
 
@@ -45,12 +45,12 @@ void DataBase::createTables()
     mysql_free_result(res);
 
     if (numTables == 2) {
-        std::cout << "Таблицы проверены" << std::endl;
+        std::cout << "РўР°Р±Р»РёС†С‹ РїСЂРѕРІРµСЂРµРЅС‹" << std::endl;
         return;
     }
     else 
     {
-        // таблица users
+        // С‚Р°Р±Р»РёС†Р° users
         const char* createUsersTable = "CREATE TABLE IF NOT EXISTS users ("
             "id INT AUTO_INCREMENT PRIMARY KEY,"
             "login VARCHAR(255) NOT NULL UNIQUE,"
@@ -59,7 +59,7 @@ void DataBase::createTables()
             "online BOOLEAN DEFAULT FALSE,"
             "isbanned BOOLEAN DEFAULT FALSE"
             ")";
-        //таблица messages
+        //С‚Р°Р±Р»РёС†Р° messages
         const char* createMessagesTable = "CREATE TABLE IF NOT EXISTS messages ("
             "id INT AUTO_INCREMENT PRIMARY KEY,"
             "from_id VARCHAR(255) NOT NULL,"
@@ -69,23 +69,23 @@ void DataBase::createTables()
             "timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
             ")";
 
-        // проверка, что таблицы успешно созданы
+        // РїСЂРѕРІРµСЂРєР°, С‡С‚Рѕ С‚Р°Р±Р»РёС†С‹ СѓСЃРїРµС€РЅРѕ СЃРѕР·РґР°РЅС‹
         if (mysql_query(&mysql, createUsersTable) == 0 &&
             mysql_query(&mysql, createMessagesTable) == 0) {
-            std::cout << "Таблицы успешно созданы" << std::endl;
+            std::cout << "РўР°Р±Р»РёС†С‹ СѓСЃРїРµС€РЅРѕ СЃРѕР·РґР°РЅС‹" << std::endl;
         }
         else {
-            std::cout << "Ошибка: не удалось создать таблицы" << mysql_error(&mysql) << std::endl;
+            std::cout << "РћС€РёР±РєР°: РЅРµ СѓРґР°Р»РѕСЃСЊ СЃРѕР·РґР°С‚СЊ С‚Р°Р±Р»РёС†С‹" << mysql_error(&mysql) << std::endl;
         }
     }
 }
-//создание пользователя admin по умолчанию
+//СЃРѕР·РґР°РЅРёРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ admin РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 void DataBase::createAdmin()
 {
     const char* selectAdmin = "SELECT * FROM users WHERE login='admin'";
 
     if (mysql_query(&mysql, selectAdmin) != 0) {
-        std::cout << "Ошибка при выполнении запроса SELECT: " << mysql_error(&mysql) << std::endl;
+        std::cout << "РћС€РёР±РєР° РїСЂРё РІС‹РїРѕР»РЅРµРЅРёРё Р·Р°РїСЂРѕСЃР° SELECT: " << mysql_error(&mysql) << std::endl;
         mysql_close(&mysql);
         return;
     }
@@ -93,74 +93,74 @@ void DataBase::createAdmin()
     MYSQL_RES* result = mysql_store_result(&mysql);
     if (result != NULL) {
         if (mysql_num_rows(result) > 0) {
-            std::cout << "Администратор готов" << std::endl;
+            std::cout << "РђРґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂ РіРѕС‚РѕРІ" << std::endl;
         }
         else {
-            const char* insertAdmin = "INSERT INTO users (login, password, name) VALUES ('admin', 'admin', 'Администратор')";
+            const char* insertAdmin = "INSERT INTO users (login, password, name) VALUES ('admin', 'admin', 'РђРґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂ')";
 
             if (mysql_query(&mysql, insertAdmin) == 0) {
-                std::cout << "Администратор создан" << std::endl;
+                std::cout << "РђРґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂ СЃРѕР·РґР°РЅ" << std::endl;
             }
             else {
-                std::cout << "Ошибка при выполнении запроса INSERT: " << mysql_error(&mysql) << std::endl;
+                std::cout << "РћС€РёР±РєР° РїСЂРё РІС‹РїРѕР»РЅРµРЅРёРё Р·Р°РїСЂРѕСЃР° INSERT: " << mysql_error(&mysql) << std::endl;
             }
         }
 
         mysql_free_result(result);
     }
     else {
-        std::cout << "Ошибка при получении результата запроса SELECT: " << mysql_error(&mysql) << std::endl;
+        std::cout << "РћС€РёР±РєР° РїСЂРё РїРѕР»СѓС‡РµРЅРёРё СЂРµР·СѓР»СЊС‚Р°С‚Р° Р·Р°РїСЂРѕСЃР° SELECT: " << mysql_error(&mysql) << std::endl;
     }
 }
-//соединение с БД
+//СЃРѕРµРґРёРЅРµРЅРёРµ СЃ Р‘Р”
 void DataBase::dataBaseConnect()
 {
 	mysql_init(&mysql);
 	if (&mysql == nullptr) 
     {
-		std::cout << "Ошибка: не удалось создать MySQL-дескриптор" << std::endl;
+		std::cout << "РћС€РёР±РєР°: РЅРµ СѓРґР°Р»РѕСЃСЊ СЃРѕР·РґР°С‚СЊ MySQL-РґРµСЃРєСЂРёРїС‚РѕСЂ" << std::endl;
 	}
 
-	// Подключаемся к серверу
-	if (!mysql_real_connect(&mysql, "localhost", "root", "root", "chat_database", NULL, NULL, 0)) 
+	// РџРѕРґРєР»СЋС‡Р°РµРјСЃСЏ Рє СЃРµСЂРІРµСЂСѓ
+	if (!mysql_real_connect(&mysql, "localhost", "grimfox", "M4053844mvd1!", "chat_database", NULL, NULL, 0)) 
     {
-		std::cout << "Ошибка: не удалось подключиться к базе данных " << mysql_error(&mysql) << std::endl;
+		std::cout << "РћС€РёР±РєР°: РЅРµ СѓРґР°Р»РѕСЃСЊ РїРѕРґРєР»СЋС‡РёС‚СЊСЃСЏ Рє Р±Р°Р·Рµ РґР°РЅРЅС‹С… " << mysql_error(&mysql) << std::endl;
 	}
 	else 
     {
-		std::cout << "Соединение с базой данных установлено" << std::endl;
+		std::cout << "РЎРѕРµРґРёРЅРµРЅРёРµ СЃ Р±Р°Р·РѕР№ РґР°РЅРЅС‹С… СѓСЃС‚Р°РЅРѕРІР»РµРЅРѕ" << std::endl;
 	}
 
     mysql_set_character_set(&mysql, "cp1251");
-    //Смотрим изменилась ли кодировка на нужную, по умолчанию идёт latin1
-    std::cout << "Установка кодировки: " << mysql_character_set_name(&mysql) << std::endl;
+    //РЎРјРѕС‚СЂРёРј РёР·РјРµРЅРёР»Р°СЃСЊ Р»Рё РєРѕРґРёСЂРѕРІРєР° РЅР° РЅСѓР¶РЅСѓСЋ, РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ РёРґС‘С‚ latin1
+    std::cout << "РЈСЃС‚Р°РЅРѕРІРєР° РєРѕРґРёСЂРѕРІРєРё: " << mysql_character_set_name(&mysql) << std::endl;
 
-	createDataBase(); //проверяем базу данных на существование, если нет - создаем новую
-    createTables(); //проверка таблиц и создание новых, если необходимо
-    createAdmin();////создание пользователя с правами администратора, если такого нет
+	createDataBase(); //РїСЂРѕРІРµСЂСЏРµРј Р±Р°Р·Сѓ РґР°РЅРЅС‹С… РЅР° СЃСѓС‰РµСЃС‚РІРѕРІР°РЅРёРµ, РµСЃР»Рё РЅРµС‚ - СЃРѕР·РґР°РµРј РЅРѕРІСѓСЋ
+    createTables(); //РїСЂРѕРІРµСЂРєР° С‚Р°Р±Р»РёС† Рё СЃРѕР·РґР°РЅРёРµ РЅРѕРІС‹С…, РµСЃР»Рё РЅРµРѕР±С…РѕРґРёРјРѕ
+    createAdmin();////СЃРѕР·РґР°РЅРёРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ СЃ РїСЂР°РІР°РјРё Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂР°, РµСЃР»Рё С‚Р°РєРѕРіРѕ РЅРµС‚
 
 }
-//отключение от БД
+//РѕС‚РєР»СЋС‡РµРЅРёРµ РѕС‚ Р‘Р”
 void DataBase::dataBaseDisconnect()
 {
 	mysql_close(&mysql);
-	std::cout << "База данных отключена..." << std::endl;
+	std::cout << "Р‘Р°Р·Р° РґР°РЅРЅС‹С… РѕС‚РєР»СЋС‡РµРЅР°..." << std::endl;
 }
-//проверка логина пр входе на сервер
+//РїСЂРѕРІРµСЂРєР° Р»РѕРіРёРЅР° РїСЂ РІС…РѕРґРµ РЅР° СЃРµСЂРІРµСЂ
 bool DataBase::checkLogin(const std::string& login)
 {
     std::string query = "SELECT * FROM users WHERE login='" + login + "'";
 
     if (mysql_query(&mysql, query.c_str()) != 0) 
     {
-        std::cout << "Ошибка при выполнении запроса SELECT: " << mysql_error(&mysql) << std::endl;
+        std::cout << "РћС€РёР±РєР° РїСЂРё РІС‹РїРѕР»РЅРµРЅРёРё Р·Р°РїСЂРѕСЃР° SELECT: " << mysql_error(&mysql) << std::endl;
         return false;
     }
 
     MYSQL_RES* result = mysql_store_result(&mysql);
     if (result == nullptr)
     {
-        std::cout << "Ошибка при получении результата запроса: " << mysql_error(&mysql) << std::endl;
+        std::cout << "РћС€РёР±РєР° РїСЂРё РїРѕР»СѓС‡РµРЅРёРё СЂРµР·СѓР»СЊС‚Р°С‚Р° Р·Р°РїСЂРѕСЃР°: " << mysql_error(&mysql) << std::endl;
         return false;
     }
 
@@ -170,21 +170,21 @@ bool DataBase::checkLogin(const std::string& login)
     
     return (num_rows > 0);
 }
-//проверка пароля пр входе на сервер
+//РїСЂРѕРІРµСЂРєР° РїР°СЂРѕР»СЏ РїСЂ РІС…РѕРґРµ РЅР° СЃРµСЂРІРµСЂ
 bool DataBase::checkPassword(const std::string& password)
 {
     std::string query = "SELECT * FROM users WHERE password='" + password + "'";
 
     if (mysql_query(&mysql, query.c_str()) != 0)
     {
-        std::cout << "Ошибка при выполнении запроса SELECT: " << mysql_error(&mysql) << std::endl;
+        std::cout << "РћС€РёР±РєР° РїСЂРё РІС‹РїРѕР»РЅРµРЅРёРё Р·Р°РїСЂРѕСЃР° SELECT: " << mysql_error(&mysql) << std::endl;
         return false;
     }
 
     MYSQL_RES* result = mysql_store_result(&mysql);
     if (result == nullptr)
     {
-        std::cout << "Ошибка при получении результата запроса: " << mysql_error(&mysql) << std::endl;
+        std::cout << "РћС€РёР±РєР° РїСЂРё РїРѕР»СѓС‡РµРЅРёРё СЂРµР·СѓР»СЊС‚Р°С‚Р° Р·Р°РїСЂРѕСЃР°: " << mysql_error(&mysql) << std::endl;
         return false;
     }
 
@@ -194,21 +194,21 @@ bool DataBase::checkPassword(const std::string& password)
 
     return (num_rows > 0);
 }
-//запрос для проверки логина пользователя
+//Р·Р°РїСЂРѕСЃ РґР»СЏ РїСЂРѕРІРµСЂРєРё Р»РѕРіРёРЅР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 bool DataBase::checkUserLogin(const std::string& login)
 {
     std::string query = "SELECT * FROM users WHERE login='" + login + "'";
 
     if (mysql_query(&mysql, query.c_str()) != 0)
     {
-        std::cout << "Ошибка при выполнении запроса SELECT: " << mysql_error(&mysql) << std::endl;
+        std::cout << "РћС€РёР±РєР° РїСЂРё РІС‹РїРѕР»РЅРµРЅРёРё Р·Р°РїСЂРѕСЃР° SELECT: " << mysql_error(&mysql) << std::endl;
         return false;
     }
 
     MYSQL_RES* result = mysql_store_result(&mysql);
     if (result == nullptr)
     {
-        std::cout << "Ошибка при получении результата запроса: " << mysql_error(&mysql) << std::endl;
+        std::cout << "РћС€РёР±РєР° РїСЂРё РїРѕР»СѓС‡РµРЅРёРё СЂРµР·СѓР»СЊС‚Р°С‚Р° Р·Р°РїСЂРѕСЃР°: " << mysql_error(&mysql) << std::endl;
         return false;
     }
 
@@ -218,21 +218,21 @@ bool DataBase::checkUserLogin(const std::string& login)
 
     return (num_rows > 0);
 }
-//запрос для проверки пароля пользователя
+//Р·Р°РїСЂРѕСЃ РґР»СЏ РїСЂРѕРІРµСЂРєРё РїР°СЂРѕР»СЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 bool DataBase::checkUserPassword(const std::string& password)
 {
     std::string query = "SELECT * FROM users WHERE password='" + password + "'";
 
     if (mysql_query(&mysql, query.c_str()) != 0)
     {
-        std::cout << "Ошибка при выполнении запроса SELECT: " << mysql_error(&mysql) << std::endl;
+        std::cout << "РћС€РёР±РєР° РїСЂРё РІС‹РїРѕР»РЅРµРЅРёРё Р·Р°РїСЂРѕСЃР° SELECT: " << mysql_error(&mysql) << std::endl;
         return false;
     }
 
     MYSQL_RES* result = mysql_store_result(&mysql);
     if (result == nullptr)
     {
-        std::cout << "Ошибка при получении результата запроса: " << mysql_error(&mysql) << std::endl;
+        std::cout << "РћС€РёР±РєР° РїСЂРё РїРѕР»СѓС‡РµРЅРёРё СЂРµР·СѓР»СЊС‚Р°С‚Р° Р·Р°РїСЂРѕСЃР°: " << mysql_error(&mysql) << std::endl;
         return false;
     }
 
@@ -242,39 +242,39 @@ bool DataBase::checkUserPassword(const std::string& password)
 
     return (num_rows > 0);
 }
-//проверка статуса блокировки
+//РїСЂРѕРІРµСЂРєР° СЃС‚Р°С‚СѓСЃР° Р±Р»РѕРєРёСЂРѕРІРєРё
 bool DataBase::isBanned(const std::string& login)
 {
     std::string query = "SELECT isbanned FROM users WHERE login = '" + login + "';";
 
     if (mysql_query(&mysql, query.c_str()))
     {
-        std::cerr << "Ошибка выполнения запроса: " << mysql_error(&mysql) << std::endl;
+        std::cerr << "РћС€РёР±РєР° РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР°: " << mysql_error(&mysql) << std::endl;
         return false;
     }
 
     res = mysql_store_result(&mysql);
     if (res == nullptr)
     {
-        std::cerr << "Ошибка получения результата запроса: " << mysql_error(&mysql) << std::endl;
+        std::cerr << "РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ СЂРµР·СѓР»СЊС‚Р°С‚Р° Р·Р°РїСЂРѕСЃР°: " << mysql_error(&mysql) << std::endl;
         return false;
     }
 
     bool isBanned = false;
 
-    // Если пользователь найден, получаем значение столбца isbanned
+    // Р•СЃР»Рё РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ РЅР°Р№РґРµРЅ, РїРѕР»СѓС‡Р°РµРј Р·РЅР°С‡РµРЅРёРµ СЃС‚РѕР»Р±С†Р° isbanned
     if (mysql_num_rows(res) > 0)
     {
         row = mysql_fetch_row(res);
-        isBanned = (std::stoi(row[0]) != 0); // Преобразуем значение в bool
+        isBanned = (std::stoi(row[0]) != 0); // РџСЂРµРѕР±СЂР°Р·СѓРµРј Р·РЅР°С‡РµРЅРёРµ РІ bool
     }
 
-    // Освобождаем результат запроса
+    // РћСЃРІРѕР±РѕР¶РґР°РµРј СЂРµР·СѓР»СЊС‚Р°С‚ Р·Р°РїСЂРѕСЃР°
     mysql_free_result(res);
 
     return isBanned;
 }
-//запрос на получение имени пользователя по логину
+//Р·Р°РїСЂРѕСЃ РЅР° РїРѕР»СѓС‡РµРЅРёРµ РёРјРµРЅРё РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РїРѕ Р»РѕРіРёРЅСѓ
 std::string DataBase::takeUserName(const std::string& login)
 {
     std::string userName; 
@@ -297,18 +297,18 @@ std::string DataBase::takeUserName(const std::string& login)
     }
     else
     {
-        std::cerr << "Ошибка выполнения запроса: " << mysql_error(&mysql) << std::endl;
+        std::cerr << "РћС€РёР±РєР° РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР°: " << mysql_error(&mysql) << std::endl;
     }
 
     return userName;
 }
-//проверка существования логина в БД
+//РїСЂРѕРІРµСЂРєР° СЃСѓС‰РµСЃС‚РІРѕРІР°РЅРёСЏ Р»РѕРіРёРЅР° РІ Р‘Р”
 bool DataBase::checkLoginExistsInDB(const std::string& login)
 {
     std::string query = "SELECT * FROM users WHERE login='" + login + "'";
 
     if (mysql_query(&mysql, query.c_str()) != 0) {
-        std::cerr << "Ошибка при выполнении запроса SELECT: " << mysql_error(&mysql) << std::endl;
+        std::cerr << "РћС€РёР±РєР° РїСЂРё РІС‹РїРѕР»РЅРµРЅРёРё Р·Р°РїСЂРѕСЃР° SELECT: " << mysql_error(&mysql) << std::endl;
         return false;
     }
 
@@ -321,12 +321,12 @@ bool DataBase::checkLoginExistsInDB(const std::string& login)
         return (num_rows > 0);
     }
     else {
-        std::cerr << "Ошибка при получении результата запроса SELECT: " << mysql_error(&mysql) << std::endl;
+        std::cerr << "РћС€РёР±РєР° РїСЂРё РїРѕР»СѓС‡РµРЅРёРё СЂРµР·СѓР»СЊС‚Р°С‚Р° Р·Р°РїСЂРѕСЃР° SELECT: " << mysql_error(&mysql) << std::endl;
         mysql_free_result(result);
         return false;
     }
 }
-//проверка существования имени в БД
+//РїСЂРѕРІРµСЂРєР° СЃСѓС‰РµСЃС‚РІРѕРІР°РЅРёСЏ РёРјРµРЅРё РІ Р‘Р”
 bool DataBase::checkNameExistsInDB(const std::string& name)
 {
     if (name == "all" || name == "All" || name == "ALL") {
@@ -336,7 +336,7 @@ bool DataBase::checkNameExistsInDB(const std::string& name)
     std::string query = "SELECT * FROM users WHERE name='" + name + "'";
 
     if (mysql_query(&mysql, query.c_str()) != 0) {
-        std::cout << "Ошибка при выполнении запроса SELECT: " << mysql_error(&mysql) << std::endl;
+        std::cout << "РћС€РёР±РєР° РїСЂРё РІС‹РїРѕР»РЅРµРЅРёРё Р·Р°РїСЂРѕСЃР° SELECT: " << mysql_error(&mysql) << std::endl;
         return false;
     }
 
@@ -348,26 +348,27 @@ bool DataBase::checkNameExistsInDB(const std::string& name)
         return (num_rows > 0);
     }
     else {
-        std::cout << "Ошибка при получении результата запроса SELECT: " << mysql_error(&mysql) << std::endl;
+        std::cout << "РћС€РёР±РєР° РїСЂРё РїРѕР»СѓС‡РµРЅРёРё СЂРµР·СѓР»СЊС‚Р°С‚Р° Р·Р°РїСЂРѕСЃР° SELECT: " << mysql_error(&mysql) << std::endl;
         mysql_free_result(res);
         return false;
     }
 }
-//добавление пользователя в БД
+//РґРѕР±Р°РІР»РµРЅРёРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РІ Р‘Р”
 bool DataBase::addNewUser(const std::string& login, const std::string& password, const std::string& name)
 {
+    std::lock_guard<std::mutex> lock(dbMutex); //РјСЊСЋС‚РµРєСЃ РїРµСЂРµРґ РІС‹РїРѕР»РЅРµРЅРёРµРј РѕРїРµСЂР°С†РёРё
     std::string query = "INSERT INTO users (login, password, name) VALUES ('" + login + "', '" + password + "', '" + name + "')";
 
     if (mysql_query(&mysql, query.c_str()) == 0) {
-        std::cout << "Новый пользователь добавлен в базу данных" << std::endl;
+        std::cout << "РќРѕРІС‹Р№ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ РґРѕР±Р°РІР»РµРЅ РІ Р±Р°Р·Сѓ РґР°РЅРЅС‹С…" << std::endl;
         return true;
     }
     else {
-        std::cout << "Ошибка при выполнении запроса INSERT: " << mysql_error(&mysql) << std::endl;
+        std::cout << "РћС€РёР±РєР° РїСЂРё РІС‹РїРѕР»РЅРµРЅРёРё Р·Р°РїСЂРѕСЃР° INSERT: " << mysql_error(&mysql) << std::endl;
         return false;
     }
 }
-//список пользователей и их статус
+//СЃРїРёСЃРѕРє РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№ Рё РёС… СЃС‚Р°С‚СѓСЃ
 std::string DataBase::takeAllUsersNameStatus()
 {
     std::string allUsersData; 
@@ -382,7 +383,7 @@ std::string DataBase::takeAllUsersNameStatus()
         {
             int numFields = mysql_num_fields(res);
 
-            // Перебор строк с результатами запроса
+            // РџРµСЂРµР±РѕСЂ СЃС‚СЂРѕРє СЃ СЂРµР·СѓР»СЊС‚Р°С‚Р°РјРё Р·Р°РїСЂРѕСЃР°
             while ((row = mysql_fetch_row(res)))
             {
                 for (int i = 0; i < numFields; ++i)
@@ -397,14 +398,14 @@ std::string DataBase::takeAllUsersNameStatus()
     }
     else
     {
-        std::cerr << "Ошибка выполнения запроса: " << mysql_error(&mysql) << std::endl;
+        std::cerr << "РћС€РёР±РєР° РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР°: " << mysql_error(&mysql) << std::endl;
     }
 
     allUsersData = "all" + allUsersData;
 
     return allUsersData;
 }
-//список пользователей и их статус, статус блокировки
+//СЃРїРёСЃРѕРє РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№ Рё РёС… СЃС‚Р°С‚СѓСЃ, СЃС‚Р°С‚СѓСЃ Р±Р»РѕРєРёСЂРѕРІРєРё
 std::string DataBase::takeAllUsersNameStatusIsBann()
 {
     std::string allUsersData; 
@@ -430,21 +431,23 @@ std::string DataBase::takeAllUsersNameStatusIsBann()
         }
         else
         {
-            std::cerr << "Ошибка выполнения запроса: " << mysql_error(&mysql) << std::endl;
+            std::cerr << "РћС€РёР±РєР° РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР°: " << mysql_error(&mysql) << std::endl;
         }
     }
     else
     {
-        std::cerr << "Ошибка выполнения запроса: " << mysql_error(&mysql) << std::endl;
+        std::cerr << "РћС€РёР±РєР° РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РїСЂРѕСЃР°: " << mysql_error(&mysql) << std::endl;
     }
 
     allUsersData = "inf|" + allUsersData;
 
     return allUsersData;
 }
-//изменение статуса блокировки пользователя
+//РёР·РјРµРЅРµРЅРёРµ СЃС‚Р°С‚СѓСЃР° Р±Р»РѕРєРёСЂРѕРІРєРё РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 void DataBase::setBannStatus(const std::string& name, bool bann)
 {
+    std::lock_guard<std::mutex> lock(dbMutex); //РјСЊСЋС‚РµРєСЃ РїРµСЂРµРґ РІС‹РїРѕР»РЅРµРЅРёРµРј РѕРїРµСЂР°С†РёРё
+
     int status = bann ? 1 : 0;
 
     std::ostringstream queryStream;
@@ -453,16 +456,18 @@ void DataBase::setBannStatus(const std::string& name, bool bann)
     std::string query = queryStream.str();
     if (mysql_query(&mysql, query.c_str()) == 0)
     {
-        std::cout << "Пользователь " << name << " заблокирован" << std::endl;
+        std::cout << "РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ " << name << " Р·Р°Р±Р»РѕРєРёСЂРѕРІР°РЅ" << std::endl;
     }
     else
     {
-        std::cerr << "Ошибка при выполнении запроса UPDATE: " << mysql_error(&mysql) << std::endl;
+        std::cerr << "РћС€РёР±РєР° РїСЂРё РІС‹РїРѕР»РЅРµРЅРёРё Р·Р°РїСЂРѕСЃР° UPDATE: " << mysql_error(&mysql) << std::endl;
     }
 }
-//изменение статуса пользователя
+//РёР·РјРµРЅРµРЅРёРµ СЃС‚Р°С‚СѓСЃР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 void DataBase::setUserStatus(const std::string& login, bool online)
 {
+    std::lock_guard<std::mutex> lock(dbMutex); //РјСЊСЋС‚РµРєСЃ РїРµСЂРµРґ РІС‹РїРѕР»РЅРµРЅРёРµРј РѕРїРµСЂР°С†РёРё
+
     int status = online ? 1 : 0;
 
     std::ostringstream queryStream;
@@ -471,58 +476,64 @@ void DataBase::setUserStatus(const std::string& login, bool online)
     std::string query = queryStream.str();
     if (mysql_query(&mysql, query.c_str()) == 0)
     {
-        std::cout << "Статус пользователя " << login << " обновлен" << std::endl;
+        std::cout << "РЎС‚Р°С‚СѓСЃ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ " << login << " РѕР±РЅРѕРІР»РµРЅ" << std::endl;
     }
     else
     {
-        std::cerr << "Ошибка при выполнении запроса UPDATE: " << mysql_error(&mysql) << std::endl;
+        std::cerr << "РћС€РёР±РєР° РїСЂРё РІС‹РїРѕР»РЅРµРЅРёРё Р·Р°РїСЂРѕСЃР° UPDATE: " << mysql_error(&mysql) << std::endl;
     }
 }
-//сброс статусов всех пользователей, нужен при запуске сервера
+//СЃР±СЂРѕСЃ СЃС‚Р°С‚СѓСЃРѕРІ РІСЃРµС… РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№, РЅСѓР¶РµРЅ РїСЂРё Р·Р°РїСѓСЃРєРµ СЃРµСЂРІРµСЂР°
 void DataBase::resetAllUsersStatus()
 {
+    std::lock_guard<std::mutex> lock(dbMutex); //РјСЊСЋС‚РµРєСЃ РїРµСЂРµРґ РІС‹РїРѕР»РЅРµРЅРёРµРј РѕРїРµСЂР°С†РёРё
+
     std::string query = "UPDATE users SET online = 0";
 
     if (mysql_query(&mysql, query.c_str()) == 0)
     {
-        std::cout << "Статус всех пользователей сброшен в базе данных" << std::endl;
+        std::cout << "РЎС‚Р°С‚СѓСЃ РІСЃРµС… РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№ СЃР±СЂРѕС€РµРЅ РІ Р±Р°Р·Рµ РґР°РЅРЅС‹С…" << std::endl;
     }
     else
     {
-        std::cerr << "Ошибка при выполнении запроса UPDATE: " << mysql_error(&mysql) << std::endl;
+        std::cerr << "РћС€РёР±РєР° РїСЂРё РІС‹РїРѕР»РЅРµРЅРёРё Р·Р°РїСЂРѕСЃР° UPDATE: " << mysql_error(&mysql) << std::endl;
     }
 }
-//добавление сообщения для всех в БД
+//РґРѕР±Р°РІР»РµРЅРёРµ СЃРѕРѕР±С‰РµРЅРёСЏ РґР»СЏ РІСЃРµС… РІ Р‘Р”
 void DataBase::addMessageToAll(const std::string& from, const std::string& to, const std::string& text, bool toAll)
 {
-    // Создаем запрос для добавления нового сообщения в таблицу "messages"
+    std::lock_guard<std::mutex> lock(dbMutex); //РјСЊСЋС‚РµРєСЃ РїРµСЂРµРґ РІС‹РїРѕР»РЅРµРЅРёРµРј РѕРїРµСЂР°С†РёРё
+
+    // РЎРѕР·РґР°РµРј Р·Р°РїСЂРѕСЃ РґР»СЏ РґРѕР±Р°РІР»РµРЅРёСЏ РЅРѕРІРѕРіРѕ СЃРѕРѕР±С‰РµРЅРёСЏ РІ С‚Р°Р±Р»РёС†Сѓ "messages"
     std::string query = "INSERT INTO messages (from_id, to_id, text, to_all) VALUES ('" + from + "', '" + to + "', '" + text + "', " + "1" + ")";
-    // Выполняем запрос к базе данных
+    // Р’С‹РїРѕР»РЅСЏРµРј Р·Р°РїСЂРѕСЃ Рє Р±Р°Р·Рµ РґР°РЅРЅС‹С…
     if (mysql_query(&mysql, query.c_str()) == 0)
     {
-        std::cout << "Новое сообщение добавлено в базу данных" << std::endl;
+        std::cout << "РќРѕРІРѕРµ СЃРѕРѕР±С‰РµРЅРёРµ РґРѕР±Р°РІР»РµРЅРѕ РІ Р±Р°Р·Сѓ РґР°РЅРЅС‹С…" << std::endl;
         
     }
     else
     {
-        std::cerr << "Ошибка при выполнении запроса INSERT: " << mysql_error(&mysql) << std::endl;
+        std::cerr << "РћС€РёР±РєР° РїСЂРё РІС‹РїРѕР»РЅРµРЅРёРё Р·Р°РїСЂРѕСЃР° INSERT: " << mysql_error(&mysql) << std::endl;
     }
 }
-//добавление сообщения для пользователя в БД
+//РґРѕР±Р°РІР»РµРЅРёРµ СЃРѕРѕР±С‰РµРЅРёСЏ РґР»СЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РІ Р‘Р”
 void DataBase::addMessageToDB(const std::string& from, const std::string& to, const std::string& text)
 {
+    std::lock_guard<std::mutex> lock(dbMutex); //РјСЊСЋС‚РµРєСЃ РїРµСЂРµРґ РІС‹РїРѕР»РЅРµРЅРёРµРј РѕРїРµСЂР°С†РёРё
+
     std::string query = "INSERT INTO messages (from_id, to_id, text) VALUES ('" + from + "', '" + to + "', '" + text + "')";
     if (mysql_query(&mysql, query.c_str()) == 0)
     {
-        std::cout << "Новое сообщение добавлено в базу данных" << std::endl;
+        std::cout << "РќРѕРІРѕРµ СЃРѕРѕР±С‰РµРЅРёРµ РґРѕР±Р°РІР»РµРЅРѕ РІ Р±Р°Р·Сѓ РґР°РЅРЅС‹С…" << std::endl;
 
     }
     else
     {
-        std::cerr << "Ошибка при выполнении запроса INSERT: " << mysql_error(&mysql) << std::endl;
+        std::cerr << "РћС€РёР±РєР° РїСЂРё РІС‹РїРѕР»РЅРµРЅРёРё Р·Р°РїСЂРѕСЃР° INSERT: " << mysql_error(&mysql) << std::endl;
     }
 }
-//вывод из БД сообщения для всех
+//РІС‹РІРѕРґ РёР· Р‘Р” СЃРѕРѕР±С‰РµРЅРёСЏ РґР»СЏ РІСЃРµС…
 std::string DataBase::loadMessagesToAll()
 {
     std::string messages;
@@ -549,18 +560,18 @@ std::string DataBase::loadMessagesToAll()
     }
     else
     {
-        std::cerr << "Ошибка при выполнении запроса SELECT: " << mysql_error(&mysql) << std::endl;
+        std::cerr << "РћС€РёР±РєР° РїСЂРё РІС‹РїРѕР»РЅРµРЅРёРё Р·Р°РїСЂРѕСЃР° SELECT: " << mysql_error(&mysql) << std::endl;
     }
     messages = "lma" + messages;
     return messages;
 }
-//вывод из бд сообщений от и для пользователя
+//РІС‹РІРѕРґ РёР· Р±Рґ СЃРѕРѕР±С‰РµРЅРёР№ РѕС‚ Рё РґР»СЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 std::string DataBase::loadMessagesToUser(const std::string& to)
 {
     std::string messages;
 
     std::string query = "SELECT timestamp, from_id, to_id, text FROM messages WHERE (from_id = '" + to + "' OR to_id = '" + to + "') AND to_all = 0 "
-        "ORDER BY timestamp ASC"; // Сортировка по времени добавления (возможно не нужна)
+        "ORDER BY timestamp ASC"; // РЎРѕСЂС‚РёСЂРѕРІРєР° РїРѕ РІСЂРµРјРµРЅРё РґРѕР±Р°РІР»РµРЅРёСЏ (РІРѕР·РјРѕР¶РЅРѕ РЅРµ РЅСѓР¶РЅР°)
 
     if (mysql_query(&mysql, query.c_str()) == 0)
     {
@@ -583,20 +594,20 @@ std::string DataBase::loadMessagesToUser(const std::string& to)
     }
     else
     {
-        std::cerr << "Ошибка при выполнении запроса SELECT: " << mysql_error(&mysql) << std::endl;
+        std::cerr << "РћС€РёР±РєР° РїСЂРё РІС‹РїРѕР»РЅРµРЅРёРё Р·Р°РїСЂРѕСЃР° SELECT: " << mysql_error(&mysql) << std::endl;
     }
 
     messages = "lmu" + messages;
     return messages;
 }
 
-//////////////////////////////////тестовый метод////////////////////////////
-//выводит содержимое таблицы users
+//////////////////////////////////С‚РµСЃС‚РѕРІС‹Р№ РјРµС‚РѕРґ////////////////////////////
+//РІС‹РІРѕРґРёС‚ СЃРѕРґРµСЂР¶РёРјРѕРµ С‚Р°Р±Р»РёС†С‹ users
 void DataBase::showAllUsers()
 {
-    mysql_query(&mysql, "SELECT * FROM users"); //Делаем запрос к таблице
+    mysql_query(&mysql, "SELECT * FROM users"); //Р”РµР»Р°РµРј Р·Р°РїСЂРѕСЃ Рє С‚Р°Р±Р»РёС†Рµ
 
-    //Выводим все что есть в базе через цикл
+    //Р’С‹РІРѕРґРёРј РІСЃРµ С‡С‚Рѕ РµСЃС‚СЊ РІ Р±Р°Р·Рµ С‡РµСЂРµР· С†РёРєР»
     if (res = mysql_store_result(&mysql)) {
         while (row = mysql_fetch_row(res)) {
             for (int i = 0; i < mysql_num_fields(res); i++) {

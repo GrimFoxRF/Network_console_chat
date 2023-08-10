@@ -1,6 +1,7 @@
-#pragma once
+п»ї#pragma once
 #include <iostream>
 #include <mysql.h>
+#include <mutex>
 
 class DataBase {
 private:
@@ -8,42 +9,44 @@ private:
 	MYSQL_RES* res;
 	MYSQL_ROW row;
 
-	void createDataBase();//создание новой базы данных, если не найдена старая
-	void createTables();//создание таблиц, если они отсутствуют
-	void createAdmin();//создание пользователя с правами администратора, если такого нет
+	std::mutex dbMutex; //РјСЊСЋС‚РµРєСЃ РґР»СЏ Р·Р°С‰РёС‚С‹ РґРѕСЃС‚СѓРїР° Рє РґР°РЅРЅС‹Рј Р±Р°Р·С‹ РґР°РЅРЅС‹С…
+
+	void createDataBase();//СЃРѕР·РґР°РЅРёРµ РЅРѕРІРѕР№ Р±Р°Р·С‹ РґР°РЅРЅС‹С…, РµСЃР»Рё РЅРµ РЅР°Р№РґРµРЅР° СЃС‚Р°СЂР°СЏ
+	void createTables();//СЃРѕР·РґР°РЅРёРµ С‚Р°Р±Р»РёС†, РµСЃР»Рё РѕРЅРё РѕС‚СЃСѓС‚СЃС‚РІСѓСЋС‚
+	void createAdmin();//СЃРѕР·РґР°РЅРёРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ СЃ РїСЂР°РІР°РјРё Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂР°, РµСЃР»Рё С‚Р°РєРѕРіРѕ РЅРµС‚
 
 public:
-	void dataBaseConnect(); // подключение к базе данных
-	void dataBaseDisconnect(); // отключение от базы данных
+	void dataBaseConnect(); // РїРѕРґРєР»СЋС‡РµРЅРёРµ Рє Р±Р°Р·Рµ РґР°РЅРЅС‹С…
+	void dataBaseDisconnect(); // РѕС‚РєР»СЋС‡РµРЅРёРµ РѕС‚ Р±Р°Р·С‹ РґР°РЅРЅС‹С…
 
-	bool checkLogin(const std::string& login); //проверка логина при входе на сервер
-	bool checkPassword(const std::string& password);//проверка пароля при входе на сервер
+	bool checkLogin(const std::string& login); //РїСЂРѕРІРµСЂРєР° Р»РѕРіРёРЅР° РїСЂРё РІС…РѕРґРµ РЅР° СЃРµСЂРІРµСЂ
+	bool checkPassword(const std::string& password);//РїСЂРѕРІРµСЂРєР° РїР°СЂРѕР»СЏ РїСЂРё РІС…РѕРґРµ РЅР° СЃРµСЂРІРµСЂ
 
-	bool checkUserLogin(const std::string& login);//проверка логина пользователя
-	bool checkUserPassword(const std::string& password);//проверка пароля пользователя
-	bool isBanned(const std::string& login);//проверка забанен ли пользователь
+	bool checkUserLogin(const std::string& login);//РїСЂРѕРІРµСЂРєР° Р»РѕРіРёРЅР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
+	bool checkUserPassword(const std::string& password);//РїСЂРѕРІРµСЂРєР° РїР°СЂРѕР»СЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
+	bool isBanned(const std::string& login);//РїСЂРѕРІРµСЂРєР° Р·Р°Р±Р°РЅРµРЅ Р»Рё РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ
 
-	std::string takeUserName(const std::string& login);//возвращает имя пользователя по логину
+	std::string takeUserName(const std::string& login);//РІРѕР·РІСЂР°С‰Р°РµС‚ РёРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РїРѕ Р»РѕРіРёРЅСѓ
 
-	bool checkLoginExistsInDB(const std::string& login);//проверка не занят ли логин
-	bool checkNameExistsInDB(const std::string& name);//проверка не занято ли имя
+	bool checkLoginExistsInDB(const std::string& login);//РїСЂРѕРІРµСЂРєР° РЅРµ Р·Р°РЅСЏС‚ Р»Рё Р»РѕРіРёРЅ
+	bool checkNameExistsInDB(const std::string& name);//РїСЂРѕРІРµСЂРєР° РЅРµ Р·Р°РЅСЏС‚Рѕ Р»Рё РёРјСЏ
 
-	bool addNewUser(const std::string& login, const std::string& password, const std::string& name);//добавляет нового пользователя в БД
-	std::string takeAllUsersNameStatus();//возвращает список всех пользователей и их статус
+	bool addNewUser(const std::string& login, const std::string& password, const std::string& name);//РґРѕР±Р°РІР»СЏРµС‚ РЅРѕРІРѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РІ Р‘Р”
+	std::string takeAllUsersNameStatus();//РІРѕР·РІСЂР°С‰Р°РµС‚ СЃРїРёСЃРѕРє РІСЃРµС… РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№ Рё РёС… СЃС‚Р°С‚СѓСЃ
 
-	std::string takeAllUsersNameStatusIsBann();//информация для админа
-	void setBannStatus(const std::string& name, bool bann);//изменить статус бана пользователя
+	std::string takeAllUsersNameStatusIsBann();//РёРЅС„РѕСЂРјР°С†РёСЏ РґР»СЏ Р°РґРјРёРЅР°
+	void setBannStatus(const std::string& name, bool bann);//РёР·РјРµРЅРёС‚СЊ СЃС‚Р°С‚СѓСЃ Р±Р°РЅР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 
-	void setUserStatus(const std::string& login, bool online);//устанавливает статус пользователя online/offline
-	void resetAllUsersStatus();//устанавливает статусы всех пользователей = 0
+	void setUserStatus(const std::string& login, bool online);//СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ СЃС‚Р°С‚СѓСЃ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ online/offline
+	void resetAllUsersStatus();//СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ СЃС‚Р°С‚СѓСЃС‹ РІСЃРµС… РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№ = 0
 
-	void addMessageToAll(const std::string& from, const std::string& to, const std::string& text, bool toAll);//добавление нового сообщения для всех в базу данных
-	void addMessageToDB(const std::string& from, const std::string& to, const std::string& text);//добавление нового сообщения для пользователя в базу данных
+	void addMessageToAll(const std::string& from, const std::string& to, const std::string& text, bool toAll);//РґРѕР±Р°РІР»РµРЅРёРµ РЅРѕРІРѕРіРѕ СЃРѕРѕР±С‰РµРЅРёСЏ РґР»СЏ РІСЃРµС… РІ Р±Р°Р·Сѓ РґР°РЅРЅС‹С…
+	void addMessageToDB(const std::string& from, const std::string& to, const std::string& text);//РґРѕР±Р°РІР»РµРЅРёРµ РЅРѕРІРѕРіРѕ СЃРѕРѕР±С‰РµРЅРёСЏ РґР»СЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РІ Р±Р°Р·Сѓ РґР°РЅРЅС‹С…
 	
-	std::string loadMessagesToAll();//сообщения для всех пользователей
-	std::string loadMessagesToUser(const std::string& to);//сообщения для текущего пользователя
+	std::string loadMessagesToAll();//СЃРѕРѕР±С‰РµРЅРёСЏ РґР»СЏ РІСЃРµС… РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№
+	std::string loadMessagesToUser(const std::string& to);//СЃРѕРѕР±С‰РµРЅРёСЏ РґР»СЏ С‚РµРєСѓС‰РµРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 	
-	//////////////////////////////////тестовый метод////////////////////////////
-	//выводит список пользователей из БД
+	//////////////////////////////////С‚РµСЃС‚РѕРІС‹Р№ РјРµС‚РѕРґ////////////////////////////
+	//РІС‹РІРѕРґРёС‚ СЃРїРёСЃРѕРє РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№ РёР· Р‘Р”
 	void showAllUsers();
 };
