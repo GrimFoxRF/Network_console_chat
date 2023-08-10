@@ -1,31 +1,33 @@
-#include "NetworkServer.h"
+п»ї#include "NetworkServer.h"
 #include <iostream>
 #include <string>
 #include <sstream>
 #include <fstream>
 #include <algorithm>
+#include <thread>
+#include <functional>
 
-NetworkServer::NetworkServer(int port) : port_(port), serverSocket_(INVALID_SOCKET), clientSocket_(INVALID_SOCKET) { } // Конструктор класса
+NetworkServer::NetworkServer(int port) : port_(port), serverSocket_(INVALID_SOCKET), clientSocket_(INVALID_SOCKET) { } // РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РєР»Р°СЃСЃР°
 
-NetworkServer::~NetworkServer() //деструктор
+NetworkServer::~NetworkServer() //РґРµСЃС‚СЂСѓРєС‚РѕСЂ
 {
     closeServerSocket();
     WSACleanup();
 }
-//запуск сетевых функций
+//Р·Р°РїСѓСЃРє СЃРµС‚РµРІС‹С… С„СѓРЅРєС†РёР№
 void NetworkServer::startServer()
 {
     Settings settings;
     settings.loadSettingsFromFile("settings.txt");
 
-    // Получение порта из настроек
+    // РџРѕР»СѓС‡РµРЅРёРµ РїРѕСЂС‚Р° РёР· РЅР°СЃС‚СЂРѕРµРє
     std::string portStr = settings.getSetting("PORT");
     int port = std::stoi(portStr);
 
     port_ = port;
 
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
-        std::cerr << "Ошибка инициализации" << std::endl;
+        std::cerr << "РћС€РёР±РєР° РёРЅРёС†РёР°Р»РёР·Р°С†РёРё" << std::endl;
         return;
     }
 
@@ -46,31 +48,34 @@ void NetworkServer::startServer()
         return;
     }
 
-    std::cout << "Сервер запущен. Ожидание соединения..." << std::endl;
+    std::cout << "РЎРµСЂРІРµСЂ Р·Р°РїСѓС‰РµРЅ. РћР¶РёРґР°РЅРёРµ СЃРѕРµРґРёРЅРµРЅРёСЏ..." << std::endl;
+    while (true) {
+        if (!acceptClientConnection()) {
+            closeServerSocket();
+            WSACleanup();
+            return;
+        }
 
-    if (!acceptClientConnection()) {
-        closeServerSocket();
-        WSACleanup();
-        return;
+        std::cout << "РљР»РёРµРЅС‚ РїРѕРґРєР»СЋС‡РёР»СЃСЏ Рє СЃРµСЂРІРµСЂСѓ" << std::endl;
+       
+        db.dataBaseConnect(); // РџРѕРґРєР»СЋС‡РµРЅРёРµ Рє Р±Р°Р·Рµ РґР°РЅРЅС‹С…
+        //СЃРѕР·РґР°РЅРёРµ РѕС‚РґРµР»СЊРЅРѕРіРѕ РїРѕС‚РѕРєР° РґР»СЏ РѕР±СЂР°Р±РѕС‚РєРё Р·Р°РїСЂРѕСЃРѕРІ РєР»РёРµРЅС‚Р°
+        std::thread clientThread(&NetworkServer::handleClient, this, clientSocket_, std::ref(db));
+        clientThread.detach();
     }
-
-    std::cout << "Клиент подключился к серверу" << std::endl;
-    DataBase db;
-    db.dataBaseConnect(); //подключение к базе данных
-    handleClient(clientSocket_, db); //обработка запросов от клиента
-
+    
 }
-//создание сокета
+//СЃРѕР·РґР°РЅРёРµ СЃРѕРєРµС‚Р°
 bool NetworkServer::createSocket()
 {
     serverSocket_ = socket(AF_INET, SOCK_STREAM, 0);
     if (serverSocket_ == INVALID_SOCKET) {
-        std::cerr << "ОШИБКА: сокет не создан" << std::endl;
+        std::cerr << "РћРЁРР‘РљРђ: СЃРѕРєРµС‚ РЅРµ СЃРѕР·РґР°РЅ" << std::endl;
         return false;
     }
     return true;
 }
-//бинд сокета
+//Р±РёРЅРґ СЃРѕРєРµС‚Р°
 bool NetworkServer::bindSocket()
 {
     SOCKADDR_IN serverAddress;
@@ -79,34 +84,35 @@ bool NetworkServer::bindSocket()
     serverAddress.sin_addr.s_addr = INADDR_ANY;
 
     if (bind(serverSocket_, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) == SOCKET_ERROR) {
-        std::cerr << "Не удалось привязать сокет" << std::endl;
+        std::cerr << "РќРµ СѓРґР°Р»РѕСЃСЊ РїСЂРёРІСЏР·Р°С‚СЊ СЃРѕРєРµС‚" << std::endl;
         return false;
     }
-    std::cout << "Сокет успешно привязан" << std::endl;
+    std::cout << "РЎРѕРєРµС‚ СѓСЃРїРµС€РЅРѕ РїСЂРёРІСЏР·Р°РЅ" << std::endl;
     return true;
 }
-//прослушивание соединения
+//РїСЂРѕСЃР»СѓС€РёРІР°РЅРёРµ СЃРѕРµРґРёРЅРµРЅРёСЏ
 bool NetworkServer::listenForConnections()
 {
     if (listen(serverSocket_, 1) == SOCKET_ERROR) {
-        std::cerr << "Не удалось прослушать сокет" << std::endl;
+        std::cerr << "РќРµ СѓРґР°Р»РѕСЃСЊ РїСЂРѕСЃР»СѓС€Р°С‚СЊ СЃРѕРєРµС‚" << std::endl;
         return false;
     }
-    std::cout << "Сокет прослушивается" << std::endl;
+    std::cout << "РЎРѕРєРµС‚ РїСЂРѕСЃР»СѓС€РёРІР°РµС‚СЃСЏ" << std::endl;
     return true;
 }
-//прием соединения клиента
+//РїСЂРёРµРј СЃРѕРµРґРёРЅРµРЅРёСЏ РєР»РёРµРЅС‚Р°
 bool NetworkServer::acceptClientConnection()
 {
     clientSocket_ = accept(serverSocket_, NULL, NULL);
     if (clientSocket_ == INVALID_SOCKET) {
-        std::cerr << "Не удалось принять соединение клиента" << std::endl;
+        std::cerr << "РќРµ СѓРґР°Р»РѕСЃСЊ РїСЂРёРЅСЏС‚СЊ СЃРѕРµРґРёРЅРµРЅРёРµ РєР»РёРµРЅС‚Р°" << std::endl;
         return false;
     }
-    std::cout << "Удалось принять соединение клиента" << std::endl;
+    std::cout << "РЈРґР°Р»РѕСЃСЊ РїСЂРёРЅСЏС‚СЊ СЃРѕРµРґРёРЅРµРЅРёРµ РєР»РёРµРЅС‚Р°" << std::endl;
+
     return true;
 }
-//закрытие сокета
+//Р·Р°РєСЂС‹С‚РёРµ СЃРѕРєРµС‚Р°
 void NetworkServer::closeServerSocket()
 {
     if (serverSocket_ != INVALID_SOCKET) {
@@ -114,36 +120,36 @@ void NetworkServer::closeServerSocket()
         serverSocket_ = INVALID_SOCKET;
     }
 }
-//прием сообщения от клиента и отправка ответа
+//РїСЂРёРµРј СЃРѕРѕР±С‰РµРЅРёСЏ РѕС‚ РєР»РёРµРЅС‚Р° Рё РѕС‚РїСЂР°РІРєР° РѕС‚РІРµС‚Р°
 void NetworkServer::handleClient(SOCKET clientSocket, DataBase& db)
 {
     char buffer[MESSAGE_LENGTH] = { 0 };
     bool connect = true;
-    // Цикл для принятия и обработки сообщений от клиента
+    // Р¦РёРєР» РґР»СЏ РїСЂРёРЅСЏС‚РёСЏ Рё РѕР±СЂР°Р±РѕС‚РєРё СЃРѕРѕР±С‰РµРЅРёР№ РѕС‚ РєР»РёРµРЅС‚Р°
     while (connect)
     {
         recv(clientSocket, buffer, MESSAGE_LENGTH, 0);
 
         std::string message(buffer);
-        // Проверка префикса и обработка соответствующего запроса
-        if (message.find("log|") == 0) // Префикс log - проверка пользователя при логине
+        // РџСЂРѕРІРµСЂРєР° РїСЂРµС„РёРєСЃР° Рё РѕР±СЂР°Р±РѕС‚РєР° СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РµРіРѕ Р·Р°РїСЂРѕСЃР°
+        if (message.find("log|") == 0) // РџСЂРµС„РёРєСЃ log - РїСЂРѕРІРµСЂРєР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РїСЂРё Р»РѕРіРёРЅРµ
         {
             void loginToServer();
             std::vector<std::string> arguments;
             if (parseMessage(message, arguments))
             {
-                // Проверяем, что получено достаточное количество аргументов
-                if (arguments.size() >= 3) //аргумент 0 - это префикс
+                // РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ РїРѕР»СѓС‡РµРЅРѕ РґРѕСЃС‚Р°С‚РѕС‡РЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ Р°СЂРіСѓРјРµРЅС‚РѕРІ
+                if (arguments.size() >= 3) //Р°СЂРіСѓРјРµРЅС‚ 0 - СЌС‚Рѕ РїСЂРµС„РёРєСЃ
                 {
                     std::string login = arguments[1];
                     std::string password = arguments[2];
 
-                    // Выполнение проверки логина и пароля в базе данных
+                    // Р’С‹РїРѕР»РЅРµРЅРёРµ РїСЂРѕРІРµСЂРєРё Р»РѕРіРёРЅР° Рё РїР°СЂРѕР»СЏ РІ Р±Р°Р·Рµ РґР°РЅРЅС‹С…
                     bool loginSuccess = db.checkUserLogin(login);
                     bool passwordSuccess = db.checkUserPassword(password);
                     bool banned = db.isBanned(login);
 
-                    // Отправка ответа клиенту
+                    // РћС‚РїСЂР°РІРєР° РѕС‚РІРµС‚Р° РєР»РёРµРЅС‚Сѓ
                     std::string response = "log|";
                     if (loginSuccess && passwordSuccess && !banned)
                     {
@@ -168,7 +174,7 @@ void NetworkServer::handleClient(SOCKET clientSocket, DataBase& db)
                 send(clientSocket, response.c_str(), response.length(), 0);
             }
         }
-        else if (message.find("n|") == 0) //поиск имени по логину
+        else if (message.find("n|") == 0) //РїРѕРёСЃРє РёРјРµРЅРё РїРѕ Р»РѕРіРёРЅСѓ
         {
             std::vector<std::string> arguments;
             if (parseMessage(message, arguments))
@@ -177,11 +183,11 @@ void NetworkServer::handleClient(SOCKET clientSocket, DataBase& db)
                 {
                     std::string login = arguments[1];
 
-                    // Выполнение проверки логина и статуса в базе данных
+                    // Р’С‹РїРѕР»РЅРµРЅРёРµ РїСЂРѕРІРµСЂРєРё Р»РѕРіРёРЅР° Рё СЃС‚Р°С‚СѓСЃР° РІ Р±Р°Р·Рµ РґР°РЅРЅС‹С…
                     bool loginSuccess = db.checkUserLogin(login);
                     bool banned = db.isBanned(login);
                     std::string name = db.takeUserName(login);
-                    // Отправка ответа клиенту
+                    // РћС‚РїСЂР°РІРєР° РѕС‚РІРµС‚Р° РєР»РёРµРЅС‚Сѓ
                     std::string response = "n|";
                     if (loginSuccess && !banned)
                     {
@@ -205,7 +211,7 @@ void NetworkServer::handleClient(SOCKET clientSocket, DataBase& db)
                 send(clientSocket, response.c_str(), response.length(), 0);
             }
         }
-        else if (message.find("reg|") == 0) //запрос на регистрацию нового пользователя
+        else if (message.find("reg|") == 0) //Р·Р°РїСЂРѕСЃ РЅР° СЂРµРіРёСЃС‚СЂР°С†РёСЋ РЅРѕРІРѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
         {
             std::vector<std::string> arguments;
             if (parseMessage(message, arguments))
@@ -216,10 +222,10 @@ void NetworkServer::handleClient(SOCKET clientSocket, DataBase& db)
                     std::string password = arguments[2];
                     std::string name = arguments[3];
 
-                    // Выполнение проверки логина и пароля в базе данных
+                    // Р’С‹РїРѕР»РЅРµРЅРёРµ РїСЂРѕРІРµСЂРєРё Р»РѕРіРёРЅР° Рё РїР°СЂРѕР»СЏ РІ Р±Р°Р·Рµ РґР°РЅРЅС‹С…
                     bool loginExists = db.checkLoginExistsInDB(login);
                     bool nameExists = db.checkNameExistsInDB(name);
-                    // Отправка ответа клиенту
+                    // РћС‚РїСЂР°РІРєР° РѕС‚РІРµС‚Р° РєР»РёРµРЅС‚Сѓ
                     std::string response = "reg|";
                     if (!loginExists && !nameExists)
                     {
@@ -248,12 +254,12 @@ void NetworkServer::handleClient(SOCKET clientSocket, DataBase& db)
                 send(clientSocket, response.c_str(), response.length(), 0);
             }
         }
-        else if (message.find("all|") == 0) //поиск имен всех пользователей и их статус
+        else if (message.find("all|") == 0) //РїРѕРёСЃРє РёРјРµРЅ РІСЃРµС… РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№ Рё РёС… СЃС‚Р°С‚СѓСЃ
         {
             std::string response = db.takeAllUsersNameStatus();
             send(clientSocket, response.c_str(), response.length(), 0);
         }
-        else if (message.find("us|") == 0) //изменение статуса пользователя
+        else if (message.find("us|") == 0) //РёР·РјРµРЅРµРЅРёРµ СЃС‚Р°С‚СѓСЃР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
         {
             std::vector<std::string> arguments;
             if (parseMessage(message, arguments))
@@ -265,10 +271,10 @@ void NetworkServer::handleClient(SOCKET clientSocket, DataBase& db)
 
                     bool status = (statusStr == "1");
 
-                    // Выполнение проверки логина и пароля в базе данных
+                    // Р’С‹РїРѕР»РЅРµРЅРёРµ РїСЂРѕРІРµСЂРєРё Р»РѕРіРёРЅР° Рё РїР°СЂРѕР»СЏ РІ Р±Р°Р·Рµ РґР°РЅРЅС‹С…
                     bool loginExists = db.checkLoginExistsInDB(login);
 
-                    // Отправка ответа клиенту
+                    // РћС‚РїСЂР°РІРєР° РѕС‚РІРµС‚Р° РєР»РёРµРЅС‚Сѓ
                     std::string response = "us|";
                     if (loginExists)
                     {
@@ -294,7 +300,7 @@ void NetworkServer::handleClient(SOCKET clientSocket, DataBase& db)
                 send(clientSocket, response.c_str(), response.length(), 0);
             }
         }
-        else if (message.find("ue|") == 0) //проверка существует ли пользователь
+        else if (message.find("ue|") == 0) //РїСЂРѕРІРµСЂРєР° СЃСѓС‰РµСЃС‚РІСѓРµС‚ Р»Рё РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ
         {
             std::vector<std::string> arguments;
             if (parseMessage(message, arguments)) 
@@ -305,7 +311,7 @@ void NetworkServer::handleClient(SOCKET clientSocket, DataBase& db)
 
                     bool nameExists = db.checkNameExistsInDB(to);
 
-                    // Отправка ответа клиенту
+                    // РћС‚РїСЂР°РІРєР° РѕС‚РІРµС‚Р° РєР»РёРµРЅС‚Сѓ
                     std::string response = "ue|";
                     if (nameExists)
                     {
@@ -329,7 +335,7 @@ void NetworkServer::handleClient(SOCKET clientSocket, DataBase& db)
                 send(clientSocket, response.c_str(), response.length(), 0);
             }
         }
-        else if (message.find("sma|") == 0) //запро на добавление в БД сообщений для всех
+        else if (message.find("sma|") == 0) //Р·Р°РїСЂРѕ РЅР° РґРѕР±Р°РІР»РµРЅРёРµ РІ Р‘Р” СЃРѕРѕР±С‰РµРЅРёР№ РґР»СЏ РІСЃРµС…
         {
             std::vector<std::string> arguments;
             if (parseMessage(message, arguments)) 
@@ -337,7 +343,7 @@ void NetworkServer::handleClient(SOCKET clientSocket, DataBase& db)
                 if (arguments.size() >= 4) 
                 {
                     std::string from = arguments[1];
-                    std::string to = "Администратор";
+                    std::string to = "РђРґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂ";
                     std::string text = arguments[3];
 
                     bool nameFrom = db.checkNameExistsInDB(from);
@@ -363,7 +369,7 @@ void NetworkServer::handleClient(SOCKET clientSocket, DataBase& db)
                 send(clientSocket, response.c_str(), response.length(), 0);
             }
         }
-        else if (message.find("sm|") == 0) //добавить в БД сообщение от и для пользователя
+        else if (message.find("sm|") == 0) //РґРѕР±Р°РІРёС‚СЊ РІ Р‘Р” СЃРѕРѕР±С‰РµРЅРёРµ РѕС‚ Рё РґР»СЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
         {
             std::vector<std::string> arguments;
             if (parseMessage(message, arguments))
@@ -400,12 +406,12 @@ void NetworkServer::handleClient(SOCKET clientSocket, DataBase& db)
             
             
         }
-        else if (message.find("lma|") == 0) //вывод сообщений для всех
+        else if (message.find("lma|") == 0) //РІС‹РІРѕРґ СЃРѕРѕР±С‰РµРЅРёР№ РґР»СЏ РІСЃРµС…
         {
             std::string response = db.loadMessagesToAll();
             send(clientSocket, response.c_str(), response.length(), 0);
         }
-        else if (message.find("lmu|") == 0)// вывод сообщений для пользователя
+        else if (message.find("lmu|") == 0)// РІС‹РІРѕРґ СЃРѕРѕР±С‰РµРЅРёР№ РґР»СЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
         {
             std::vector<std::string> arguments;
             if (parseMessage(message, arguments))
@@ -429,12 +435,12 @@ void NetworkServer::handleClient(SOCKET clientSocket, DataBase& db)
                 send(clientSocket, response.c_str(), response.length(), 0);
             }
         }
-        else if (message.find("inf|") == 0) //поиск имен всех пользователей, статуса и блокировки
+        else if (message.find("inf|") == 0) //РїРѕРёСЃРє РёРјРµРЅ РІСЃРµС… РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№, СЃС‚Р°С‚СѓСЃР° Рё Р±Р»РѕРєРёСЂРѕРІРєРё
         {
             std::string response = db.takeAllUsersNameStatusIsBann();
             send(clientSocket, response.c_str(), response.length(), 0);
         }
-        else if (message.find("ban|") == 0) //изменение статуса пользователя
+        else if (message.find("ban|") == 0) //РёР·РјРµРЅРµРЅРёРµ СЃС‚Р°С‚СѓСЃР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
         {
             std::vector<std::string> arguments;
             if (parseMessage(message, arguments))
@@ -473,37 +479,37 @@ void NetworkServer::handleClient(SOCKET clientSocket, DataBase& db)
                 send(clientSocket, response.c_str(), response.length(), 0);
             }
         }
-        // Очищаем буфер для следующего сообщения
+        // РћС‡РёС‰Р°РµРј Р±СѓС„РµСЂ РґР»СЏ СЃР»РµРґСѓСЋС‰РµРіРѕ СЃРѕРѕР±С‰РµРЅРёСЏ
         memset(buffer, 0, MESSAGE_LENGTH);
     }
 }
-//закрытие сервера
+//Р·Р°РєСЂС‹С‚РёРµ СЃРµСЂРІРµСЂР°
 void NetworkServer::stopServer() 
 {
-    // Закрытие сокета сервера
+    // Р—Р°РєСЂС‹С‚РёРµ СЃРѕРєРµС‚Р° СЃРµСЂРІРµСЂР°
     if (serverSocket_ != INVALID_SOCKET) {
         closesocket(serverSocket_);
         serverSocket_ = INVALID_SOCKET;
     }
 
-    // Закрытие сокета клиента
+    // Р—Р°РєСЂС‹С‚РёРµ СЃРѕРєРµС‚Р° РєР»РёРµРЅС‚Р°
     if (clientSocket_ != INVALID_SOCKET) {
         closesocket(clientSocket_);
         clientSocket_ = INVALID_SOCKET;
     }
     
-    WSACleanup(); //освобождения ресурсов
+    WSACleanup(); //РѕСЃРІРѕР±РѕР¶РґРµРЅРёСЏ СЂРµСЃСѓСЂСЃРѕРІ
 }
 
 bool NetworkServer::parseMessage(const std::string& message, std::vector<std::string>& arguments)
 {
-    // Разделитель "|" для аргументов
+    // Р Р°Р·РґРµР»РёС‚РµР»СЊ "|" РґР»СЏ Р°СЂРіСѓРјРµРЅС‚РѕРІ
     const char delimiter = '|';
 
-    // Создаем поток для чтения из сообщения
+    // РЎРѕР·РґР°РµРј РїРѕС‚РѕРє РґР»СЏ С‡С‚РµРЅРёСЏ РёР· СЃРѕРѕР±С‰РµРЅРёСЏ
     std::istringstream stream(message);
 
-    // Разбиваем сообщение на аргументы по разделителю и сохраняем их в векторе
+    // Р Р°Р·Р±РёРІР°РµРј СЃРѕРѕР±С‰РµРЅРёРµ РЅР° Р°СЂРіСѓРјРµРЅС‚С‹ РїРѕ СЂР°Р·РґРµР»РёС‚РµР»СЋ Рё СЃРѕС…СЂР°РЅСЏРµРј РёС… РІ РІРµРєС‚РѕСЂРµ
     std::string argument;
     while (std::getline(stream, argument, delimiter))
     {

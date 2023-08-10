@@ -1,4 +1,4 @@
-//Сетевой код сервера
+п»ї//РЎРµС‚РµРІРѕР№ РєРѕРґ СЃРµСЂРІРµСЂР°
 #pragma once
 #include <string>
 #include <winsock2.h>
@@ -7,8 +7,8 @@
 
 #pragma comment(lib, "ws2_32.lib") 
 
-#define MESSAGE_LENGTH 1024 // Максимальный размер буфера для данных
-//#define PORT 7777 // Будет использоваться этот номер порта
+#define MESSAGE_LENGTH 1024 // РњР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СЂР°Р·РјРµСЂ Р±СѓС„РµСЂР° РґР»СЏ РґР°РЅРЅС‹С…
+//#define PORT 7777 // Р‘СѓРґРµС‚ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊСЃСЏ СЌС‚РѕС‚ РЅРѕРјРµСЂ РїРѕСЂС‚Р°
 
 class NetworkServer {
 private:
@@ -17,21 +17,23 @@ private:
 	SOCKET serverSocket_ = INVALID_SOCKET;
 	SOCKET clientSocket_ = INVALID_SOCKET;
 
-	bool createSocket(); //создание сокета
-	bool bindSocket(); //бинд сокета
-	bool listenForConnections(); //прослушивание порта
-	bool acceptClientConnection(); //прием соединения от клиента
-	void closeServerSocket(); //закрытие сокета
+	DataBase db; // РћР±СЉРµРєС‚ Р±Р°Р·С‹ РґР°РЅРЅС‹С… РєР°Рє С‡Р»РµРЅ РєР»Р°СЃСЃР°
+
+	bool createSocket(); //СЃРѕР·РґР°РЅРёРµ СЃРѕРєРµС‚Р°
+	bool bindSocket(); //Р±РёРЅРґ СЃРѕРєРµС‚Р°
+	bool listenForConnections(); //РїСЂРѕСЃР»СѓС€РёРІР°РЅРёРµ РїРѕСЂС‚Р°
+	bool acceptClientConnection(); //РїСЂРёРµРј СЃРѕРµРґРёРЅРµРЅРёСЏ РѕС‚ РєР»РёРµРЅС‚Р°
+	void closeServerSocket(); //Р·Р°РєСЂС‹С‚РёРµ СЃРѕРєРµС‚Р°
 
 public:
-	NetworkServer(int port); //конструктор класса NetworkServer
-	NetworkServer() {} // Инициализация объекта NetworkServer по умолчанию
+	NetworkServer(int port); //РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РєР»Р°СЃСЃР° NetworkServer
+	NetworkServer() {} // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РѕР±СЉРµРєС‚Р° NetworkServer РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 	~NetworkServer();
 
-	void startServer(); //запуск сетевых функций
-	void handleClient(SOCKET clientSocket, DataBase& db); //прием сообщений от клиента
-	void stopServer(); //отключение сетевых функций
+	void startServer(); //Р·Р°РїСѓСЃРє СЃРµС‚РµРІС‹С… С„СѓРЅРєС†РёР№
+	void handleClient(SOCKET clientSocket, DataBase& db); //РїСЂРёРµРј СЃРѕРѕР±С‰РµРЅРёР№ РѕС‚ РєР»РёРµРЅС‚Р°
+	void stopServer(); //РѕС‚РєР»СЋС‡РµРЅРёРµ СЃРµС‚РµРІС‹С… С„СѓРЅРєС†РёР№
 
-	bool parseMessage(const std::string& message, std::vector<std::string>& arguments);//метод для обработки сообщения
+	bool parseMessage(const std::string& message, std::vector<std::string>& arguments);//РјРµС‚РѕРґ РґР»СЏ РѕР±СЂР°Р±РѕС‚РєРё СЃРѕРѕР±С‰РµРЅРёСЏ
 
 };
