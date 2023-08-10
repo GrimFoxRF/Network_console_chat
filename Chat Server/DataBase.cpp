@@ -122,7 +122,7 @@ void DataBase::dataBaseConnect()
 	}
 
 	// Подключаемся к серверу
-	if (!mysql_real_connect(&mysql, "localhost", "grimfox", "M4053844mvd1!", "chat_database", NULL, NULL, 0)) 
+	if (!mysql_real_connect(&mysql, "localhost", "root", "root", "chat_database", NULL, NULL, 0)) 
     {
 		std::cout << "Ошибка: не удалось подключиться к базе данных " << mysql_error(&mysql) << std::endl;
 	}
