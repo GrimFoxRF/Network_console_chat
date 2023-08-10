@@ -1,4 +1,4 @@
-//Сетевой код клиента
+п»ї//РЎРµС‚РµРІРѕР№ РєРѕРґ РєР»РёРµРЅС‚Р°
 #pragma once
 #include <winsock2.h>
 #include <iostream>
@@ -7,8 +7,8 @@
 
 #pragma comment(lib, "ws2_32.lib") 
 
-#define MESSAGE_LENGTH 1024 // Максимальный размер буфера для данных
-//#define PORT 7777 // Будет использоваться этот номер порта
+#define MESSAGE_LENGTH 1024 // РњР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СЂР°Р·РјРµСЂ Р±СѓС„РµСЂР° РґР»СЏ РґР°РЅРЅС‹С…
+//#define PORT 7777 // Р‘СѓРґРµС‚ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊСЃСЏ СЌС‚РѕС‚ РЅРѕРјРµСЂ РїРѕСЂС‚Р°
 
 
 class NetworkClient {
@@ -18,34 +18,34 @@ private:
     WSADATA wsaData;
     SOCKET clientSocket_;
 
-    bool createSocket(); //создание сокета
-    bool connectToServer(); //соединение с сервером
-    void closeSocket(); //закрытие сокета
+    bool createSocket(); //СЃРѕР·РґР°РЅРёРµ СЃРѕРєРµС‚Р°
+    bool connectToServer(); //СЃРѕРµРґРёРЅРµРЅРёРµ СЃ СЃРµСЂРІРµСЂРѕРј
+    void closeSocket(); //Р·Р°РєСЂС‹С‚РёРµ СЃРѕРєРµС‚Р°
 
 public:
-    NetworkClient(const std::string& ipAddress, int port); //конструктор класса NetworkClient
+    NetworkClient(const std::string& ipAddress, int port); //РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РєР»Р°СЃСЃР° NetworkClient
     ~NetworkClient();
 
-    void startClient(); //запуск сетевых функций
-    void stopClient(); //остановка сетевых функций и закрытие сокета
-    void sendMessage(SOCKET clientSocket, const std::string& message); //отправка тестового сообщения серверу
+    void startClient(); //Р·Р°РїСѓСЃРє СЃРµС‚РµРІС‹С… С„СѓРЅРєС†РёР№
+    void stopClient(); //РѕСЃС‚Р°РЅРѕРІРєР° СЃРµС‚РµРІС‹С… С„СѓРЅРєС†РёР№ Рё Р·Р°РєСЂС‹С‚РёРµ СЃРѕРєРµС‚Р°
+    void sendMessage(SOCKET clientSocket, const std::string& message); //РѕС‚РїСЂР°РІРєР° С‚РµСЃС‚РѕРІРѕРіРѕ СЃРѕРѕР±С‰РµРЅРёСЏ СЃРµСЂРІРµСЂСѓ
 
-    bool parseMessage(const std::string& message, std::vector<std::string>& arguments);//метод для лбработки сообщений от сервера
-    //---ЗАПРОСЫ К СЕРВЕРУ---
-    std::string loginToServer(const std::string& login, const std::string& password);//запрос на проверку логина и пароля
-    std::string askUserName(const std::string& login);//запрос на получение имени пользователя по логину
-    std::string registrationNewUser(const std::string& login, const std::string& password, const std::string& name);//запрос на регистрацию нового пользователя
-    std::string setUserStatus(const std::string& login, bool status);//запрос на изменение статуса пользователя
+    bool parseMessage(const std::string& message, std::vector<std::string>& arguments);//РјРµС‚РѕРґ РґР»СЏ Р»Р±СЂР°Р±РѕС‚РєРё СЃРѕРѕР±С‰РµРЅРёР№ РѕС‚ СЃРµСЂРІРµСЂР°
+    //---Р—РђРџР РћРЎР« Рљ РЎР•Р Р’Р•Р РЈ---
+    std::string loginToServer(const std::string& login, const std::string& password);//Р·Р°РїСЂРѕСЃ РЅР° РїСЂРѕРІРµСЂРєСѓ Р»РѕРіРёРЅР° Рё РїР°СЂРѕР»СЏ
+    std::string askUserName(const std::string& login);//Р·Р°РїСЂРѕСЃ РЅР° РїРѕР»СѓС‡РµРЅРёРµ РёРјРµРЅРё РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РїРѕ Р»РѕРіРёРЅСѓ
+    std::string registrationNewUser(const std::string& login, const std::string& password, const std::string& name);//Р·Р°РїСЂРѕСЃ РЅР° СЂРµРіРёСЃС‚СЂР°С†РёСЋ РЅРѕРІРѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
+    std::string setUserStatus(const std::string& login, bool status);//Р·Р°РїСЂРѕСЃ РЅР° РёР·РјРµРЅРµРЅРёРµ СЃС‚Р°С‚СѓСЃР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 
-    std::string sendMessageToDB(const std::string& from, const std::string& to, const std::string& text);//отправка сообщения в базу данных
-    std::string sendMessageToALL(const std::string& from, const std::string& to, const std::string& text);//отправка сообщения всем пользователям
-    std::string checkUserExists(const std::string& to);//проверка что пользователь есть в БД
-    std::vector<std::string> loadMessagesToAll();//показывает сообщения дла всех пользователей
-    std::vector<std::string> loadMessagesToUser(const std::string& to);//показывает сообщения для текущего пользователя
+    std::string sendMessageToDB(const std::string& from, const std::string& to, const std::string& text);//РѕС‚РїСЂР°РІРєР° СЃРѕРѕР±С‰РµРЅРёСЏ РІ Р±Р°Р·Сѓ РґР°РЅРЅС‹С…
+    std::string sendMessageToALL(const std::string& from, const std::string& to, const std::string& text);//РѕС‚РїСЂР°РІРєР° СЃРѕРѕР±С‰РµРЅРёСЏ РІСЃРµРј РїРѕР»СЊР·РѕРІР°С‚РµР»СЏРј
+    std::string checkUserExists(const std::string& to);//РїСЂРѕРІРµСЂРєР° С‡С‚Рѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ РµСЃС‚СЊ РІ Р‘Р”
+    std::vector<std::string> loadMessagesToAll();//РїРѕРєР°Р·С‹РІР°РµС‚ СЃРѕРѕР±С‰РµРЅРёСЏ РґР»Р° РІСЃРµС… РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№
+    std::vector<std::string> loadMessagesToUser(const std::string& to);//РїРѕРєР°Р·С‹РІР°РµС‚ СЃРѕРѕР±С‰РµРЅРёСЏ РґР»СЏ С‚РµРєСѓС‰РµРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 
-    std::vector<std::string> loadAllUsersFromDB();//показывает список пользователей и их статус
-    std::vector<std::string> loadAllUsersInfo();//показывает список пользователей и информацию для админа
-    std::string setBannStatus(const std::string& name, bool bann);//запрос на блокировку/разблокировку пользователя
+    std::vector<std::string> loadAllUsersFromDB();//РїРѕРєР°Р·С‹РІР°РµС‚ СЃРїРёСЃРѕРє РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№ Рё РёС… СЃС‚Р°С‚СѓСЃ
+    std::vector<std::string> loadAllUsersInfo();//РїРѕРєР°Р·С‹РІР°РµС‚ СЃРїРёСЃРѕРє РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№ Рё РёРЅС„РѕСЂРјР°С†РёСЋ РґР»СЏ Р°РґРјРёРЅР°
+    std::string setBannStatus(const std::string& name, bool bann);//Р·Р°РїСЂРѕСЃ РЅР° Р±Р»РѕРєРёСЂРѕРІРєСѓ/СЂР°Р·Р±Р»РѕРєРёСЂРѕРІРєСѓ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 
 
 

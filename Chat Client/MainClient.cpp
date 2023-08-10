@@ -1,4 +1,4 @@
-//Клиент сетевого чата
+п»ї//РљР»РёРµРЅС‚ СЃРµС‚РµРІРѕРіРѕ С‡Р°С‚Р°
 #include <iostream>
 #include <winsock2.h>
 #include <Windows.h>
@@ -12,31 +12,31 @@ int main()
 	SetConsoleOutputCP(1251);
 	setlocale(LC_ALL, "Russian");
 
-	Chat chat; //объект чат создан
+	Chat chat; //РѕР±СЉРµРєС‚ С‡Р°С‚ СЃРѕР·РґР°РЅ
 	Settings settings;
 
-	settings.loadSettingsFromFile("settings.txt"); //загрузка настроек из файла
+	settings.loadSettingsFromFile("settings.txt"); //Р·Р°РіСЂСѓР·РєР° РЅР°СЃС‚СЂРѕРµРє РёР· С„Р°Р№Р»Р°
 	std::string portStr = settings.getSetting("PORT");
 	std::string IP = settings.getSetting("IP");
 	int PORT = std::stoi(portStr);
 
-	NetworkClient client(IP, PORT); //объект клиент создан
+	NetworkClient client(IP, PORT); //РѕР±СЉРµРєС‚ РєР»РёРµРЅС‚ СЃРѕР·РґР°РЅ
 
-	chat.start(); //запуск чата
+	chat.start(); //Р·Р°РїСѓСЃРє С‡Р°С‚Р°
 
-	client.startClient(); //запуск сетевых функций
+	client.startClient(); //Р·Р°РїСѓСЃРє СЃРµС‚РµРІС‹С… С„СѓРЅРєС†РёР№
 
-	while (chat.chatWork()) //основной цикл программы
+	while (chat.chatWork()) //РѕСЃРЅРѕРІРЅРѕР№ С†РёРєР» РїСЂРѕРіСЂР°РјРјС‹
 	{
-		chat.showMainMenu(client, settings); //Главное меню
+		chat.showMainMenu(client, settings); //Р“Р»Р°РІРЅРѕРµ РјРµРЅСЋ
 		while (chat.getUserOnline())
 		{
-			if (chat.getCurrentUserName() == "Администратор") //если вошел админ, откроется его меню
+			if (chat.getCurrentUserName() == "РђРґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂ") //РµСЃР»Рё РІРѕС€РµР» Р°РґРјРёРЅ, РѕС‚РєСЂРѕРµС‚СЃСЏ РµРіРѕ РјРµРЅСЋ
 			{
 				
 				chat.showAdminMenu(client);
 			}
-			else //меню простых пользователей
+			else //РјРµРЅСЋ РїСЂРѕСЃС‚С‹С… РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№
 			{
 
 				chat.showChatMenu(client);
@@ -44,7 +44,7 @@ int main()
 		}
 	}
 
-	client.stopClient(); //закрытие соединеия
+	client.stopClient(); //Р·Р°РєСЂС‹С‚РёРµ СЃРѕРµРґРёРЅРµРёСЏ
 
 	return 0;
 }

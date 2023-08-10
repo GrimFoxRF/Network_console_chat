@@ -1,4 +1,4 @@
-#include <iostream>
+п»ї#include <iostream>
 #include <fstream>
 #include <vector>
 #include <algorithm>
@@ -23,18 +23,18 @@ bool Chat::chatWork() const
 {
 	return _chatWork;
 }
-//главное меню
+//РіР»Р°РІРЅРѕРµ РјРµРЅСЋ
 void Chat::showMainMenu(NetworkClient& client, Settings& settings)
 {
 	char choice;
 
 	setUserOnline(false);
 
-	std::cout << "\n\n\tГлавное Меню\n" << std::endl;
-	std::cout << "[" << getCurrentTime() << "]" << std::endl; //Дата и время в главном меню
+	std::cout << "\n\n\tР“Р»Р°РІРЅРѕРµ РњРµРЅСЋ\n" << std::endl;
+	std::cout << "[" << getCurrentTime() << "]" << std::endl; //Р”Р°С‚Р° Рё РІСЂРµРјСЏ РІ РіР»Р°РІРЅРѕРј РјРµРЅСЋ
 	while (!_userOnline && _chatWork)
 	{
-		std::cout << "\n1 - Вход в Чат\n2 - Регистрация пользователя\n3 - Настройки\n4 - Выход\n" << std::endl;
+		std::cout << "\n1 - Р’С…РѕРґ РІ Р§Р°С‚\n2 - Р РµРіРёСЃС‚СЂР°С†РёСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ\n3 - РќР°СЃС‚СЂРѕР№РєРё\n4 - Р’С‹С…РѕРґ\n" << std::endl;
 		std::cin >> choice;
 		switch (choice)
 		{
@@ -48,17 +48,17 @@ void Chat::showMainMenu(NetworkClient& client, Settings& settings)
 			showSettingsMenu(settings);
 			break;
 		case('4'):
-			std::cout << "\n\tВыход\n" << std::endl;
+			std::cout << "\n\tР’С‹С…РѕРґ\n" << std::endl;
 			_chatWork = false;
 			system("pause");
 			break;
 		default:
-			std::cout << "Введите число от 1 до 4" << std::endl;
+			std::cout << "Р’РІРµРґРёС‚Рµ С‡РёСЃР»Рѕ РѕС‚ 1 РґРѕ 4" << std::endl;
 			break;
 		}
 	}
 }
-//меню входа в чат
+//РјРµРЅСЋ РІС…РѕРґР° РІ С‡Р°С‚
 void Chat::showLoginMenu(NetworkClient& client)
 {
 	bool menu = true;
@@ -67,9 +67,9 @@ void Chat::showLoginMenu(NetworkClient& client)
 
 	while (menu)
 	{
-		std::cout << "\tВведите логин:\n" << std::endl;
+		std::cout << "\tР’РІРµРґРёС‚Рµ Р»РѕРіРёРЅ:\n" << std::endl;
 		std::cin >> login;
-		std::cout << "\tВведите пароль:\n" << std::endl;
+		std::cout << "\tР’РІРµРґРёС‚Рµ РїР°СЂРѕР»СЊ:\n" << std::endl;
 		std::cin >> password;
 		std::string responce = client.loginToServer(login, password);
 		if (responce == "log|success")
@@ -84,14 +84,14 @@ void Chat::showLoginMenu(NetworkClient& client)
 		}
 		else 
 		{
-			std::cout << "\nОШИБКА: данные не верны" << std::endl;
+			std::cout << "\nРћРЁРР‘РљРђ: РґР°РЅРЅС‹Рµ РЅРµ РІРµСЂРЅС‹" << std::endl;
 			menu = false;
 			break;
 		}
 		
 	}
 }
-//меню регистрации пользователя
+//РјРµРЅСЋ СЂРµРіРёСЃС‚СЂР°С†РёРё РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 void Chat::showRegistrationMenu(NetworkClient& client)
 {
 	bool menu = true;
@@ -99,54 +99,54 @@ void Chat::showRegistrationMenu(NetworkClient& client)
 	std::string password;
 	std::string name;
 
-	std::cout << "\tРегистрация нового пользователя:\n" << std::endl;
+	std::cout << "\tР РµРіРёСЃС‚СЂР°С†РёСЏ РЅРѕРІРѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ:\n" << std::endl;
 
 	while (menu)
 	{
-		std::cout << "Придумайте логин:\n" << std::endl;
+		std::cout << "РџСЂРёРґСѓРјР°Р№С‚Рµ Р»РѕРіРёРЅ:\n" << std::endl;
 		std::cin >> login;
 
-		std::cout << "Придумайте пароль: \n" << std::endl;
+		std::cout << "РџСЂРёРґСѓРјР°Р№С‚Рµ РїР°СЂРѕР»СЊ: \n" << std::endl;
 		std::cin >> password;
 
-		std::cout << "Придумайте имя пользователя: \n" << std::endl;
+		std::cout << "РџСЂРёРґСѓРјР°Р№С‚Рµ РёРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ: \n" << std::endl;
 		std::cin >> name;
 
 		std::string response = client.registrationNewUser(login, password, name);
 		if (response == "reg|success")
 		{
-			std::cout << "\nПользователь успешно зарегистрирован" << std::endl;
+			std::cout << "\nРџРѕР»СЊР·РѕРІР°С‚РµР»СЊ СѓСЃРїРµС€РЅРѕ Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅ" << std::endl;
 			menu = false;
 			break;
 		}
 		else if(response == "reg|LoginFail")
 		{
-			std::cout << "\nЛогин занят" << std::endl;
+			std::cout << "\nР›РѕРіРёРЅ Р·Р°РЅСЏС‚" << std::endl;
 			menu = false;
 			break;
 		}
 		else if (response == "reg|NameFail")
 		{
-			std::cout << "\nИмя занято" << std::endl;
+			std::cout << "\nРРјСЏ Р·Р°РЅСЏС‚Рѕ" << std::endl;
 			menu = false;
 			break;
 		}
 		else 
 		{
-			std::cout << "\nОШИБКА: пользователь не зарегистрирован" << std::endl;
+			std::cout << "\nРћРЁРР‘РљРђ: РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ РЅРµ Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅ" << std::endl;
 			menu = false;
 			break;
 		}
 	}
 }
-//меню администратора
+//РјРµРЅСЋ Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂР°
 void Chat::showAdminMenu(NetworkClient& client)
 {
 	char choice;
-	std::cout << "\n\t----Функции пользователя----" << std::endl;
-	std::cout << "\n1 - Войти в общий чат\n2 - Войти в личный чат\n3 - Написать сообщение\n4 - Показать всех пользователей\n5 - Выйти из чата\n" << std::endl;
-	std::cout << "\t----Функции администратора----" << std::endl;
-	std::cout << "\n6 - Показать информацию о пользователях\n7 - Заблокировать пользователя\n8 - Разблокировать пользователя\n" << std::endl;
+	std::cout << "\n\t----Р¤СѓРЅРєС†РёРё РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ----" << std::endl;
+	std::cout << "\n1 - Р’РѕР№С‚Рё РІ РѕР±С‰РёР№ С‡Р°С‚\n2 - Р’РѕР№С‚Рё РІ Р»РёС‡РЅС‹Р№ С‡Р°С‚\n3 - РќР°РїРёСЃР°С‚СЊ СЃРѕРѕР±С‰РµРЅРёРµ\n4 - РџРѕРєР°Р·Р°С‚СЊ РІСЃРµС… РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№\n5 - Р’С‹Р№С‚Рё РёР· С‡Р°С‚Р°\n" << std::endl;
+	std::cout << "\t----Р¤СѓРЅРєС†РёРё Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂР°----" << std::endl;
+	std::cout << "\n6 - РџРѕРєР°Р·Р°С‚СЊ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏС…\n7 - Р—Р°Р±Р»РѕРєРёСЂРѕРІР°С‚СЊ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ\n8 - Р Р°Р·Р±Р»РѕРєРёСЂРѕРІР°С‚СЊ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ\n" << std::endl;
 	std::cin >> choice;
 
 	switch (choice)
@@ -164,7 +164,7 @@ void Chat::showAdminMenu(NetworkClient& client)
 		showAllUsers(client);
 		break;
 	case ('5'):
-		std::cout << "\tВыход\n" << std::endl;
+		std::cout << "\tР’С‹С…РѕРґ\n" << std::endl;
 		client.setUserStatus(getCurrentUserLogin(), false);
 		setUserOnline(false);
 		break;
@@ -179,13 +179,13 @@ void Chat::showAdminMenu(NetworkClient& client)
 		break;
 	}
 }
-//меню пользователя
+//РјРµРЅСЋ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 void Chat::showChatMenu(NetworkClient& client)
 {
 	char choice;
 
-	std::cout << "\t\n----Функции пользователя----" << std::endl;
-	std::cout << "\n1 - Войти в общий чат\n2 - Войти в личный чат\n3 - Написать сообщение\n4 - Показать всех пользователей\n5 - Выйти из чата\n" << std::endl;
+	std::cout << "\t\n----Р¤СѓРЅРєС†РёРё РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ----" << std::endl;
+	std::cout << "\n1 - Р’РѕР№С‚Рё РІ РѕР±С‰РёР№ С‡Р°С‚\n2 - Р’РѕР№С‚Рё РІ Р»РёС‡РЅС‹Р№ С‡Р°С‚\n3 - РќР°РїРёСЃР°С‚СЊ СЃРѕРѕР±С‰РµРЅРёРµ\n4 - РџРѕРєР°Р·Р°С‚СЊ РІСЃРµС… РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№\n5 - Р’С‹Р№С‚Рё РёР· С‡Р°С‚Р°\n" << std::endl;
 
 	std::cin >> choice;
 
@@ -204,51 +204,51 @@ void Chat::showChatMenu(NetworkClient& client)
 		showAllUsers(client);
 		break;
 	case ('5'):
-		std::cout << "\tВыход\n" << std::endl;
+		std::cout << "\tР’С‹С…РѕРґ\n" << std::endl;
 		client.setUserStatus(getCurrentUserLogin(), false);
 		setUserOnline(false);
 		break;
 	}
 
 }
-//Общий чат
+//РћР±С‰РёР№ С‡Р°С‚
 void Chat::showGeneralChat(NetworkClient& client)
 {
 	std::vector<std::string> messages;
 
 	messages = client.loadMessagesToAll();
 
- 	std::cout << "\n\tОбщий чат: \n" << std::endl;
+ 	std::cout << "\n\tРћР±С‰РёР№ С‡Р°С‚: \n" << std::endl;
 	for (const std::string& message : messages)
 	{
-		// Ищем позиции разделителей '|'
+		// РС‰РµРј РїРѕР·РёС†РёРё СЂР°Р·РґРµР»РёС‚РµР»РµР№ '|'
 		size_t firstDelimiterPos = message.find('|');
 		size_t secondDelimiterPos = message.find('|', firstDelimiterPos + 1);
 		size_t thirdDelimiterPos = message.find('|', secondDelimiterPos + 1);
 
 		if (firstDelimiterPos != std::string::npos && secondDelimiterPos != std::string::npos && thirdDelimiterPos != std::string::npos)
 		{
-			// Извлекаем time, from и text из строки
+			// РР·РІР»РµРєР°РµРј time, from Рё text РёР· СЃС‚СЂРѕРєРё
 			std::string time = message.substr(0, firstDelimiterPos);
 			std::string from = message.substr(firstDelimiterPos + 1, secondDelimiterPos - firstDelimiterPos - 1);
 			std::string text = message.substr(secondDelimiterPos + 1, thirdDelimiterPos - secondDelimiterPos - 1);
 
-			// Выводим time, from и text на экран
+			// Р’С‹РІРѕРґРёРј time, from Рё text РЅР° СЌРєСЂР°РЅ
 			std::cout << "[" << time << "] " << from << ": \n\t-----> " << text << std::endl;
 		}
 	}
 }
-//Личный чат
+//Р›РёС‡РЅС‹Р№ С‡Р°С‚
 void Chat::showUserChat(NetworkClient& client)
 {
 	std::vector<std::string> messages;
 
 	messages = client.loadMessagesToUser(getCurrentUserName());
 
-	std::cout << "\n\tЧат пользователя: " << getCurrentUserName() << "\n" << std::endl;
+	std::cout << "\n\tР§Р°С‚ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ: " << getCurrentUserName() << "\n" << std::endl;
 	for (const std::string& message : messages)
 	{
-		// Ищем позиции разделителей '|'
+		// РС‰РµРј РїРѕР·РёС†РёРё СЂР°Р·РґРµР»РёС‚РµР»РµР№ '|'
 		size_t firstDelimiterPos = message.find('|');
 		size_t secondDelimiterPos = message.find('|', firstDelimiterPos + 1);
 		size_t thirdDelimiterPos = message.find('|', secondDelimiterPos + 1);
@@ -259,52 +259,52 @@ void Chat::showUserChat(NetworkClient& client)
 			thirdDelimiterPos != std::string::npos &&
 			fourthDelimiterPos != std::string::npos)
 		{
-			// Извлекаем time, from и text из строки
+			// РР·РІР»РµРєР°РµРј time, from Рё text РёР· СЃС‚СЂРѕРєРё
 			std::string time = message.substr(0, firstDelimiterPos);
 			std::string from = message.substr(firstDelimiterPos + 1, secondDelimiterPos - firstDelimiterPos - 1);
 			std::string to = message.substr(secondDelimiterPos + 1, thirdDelimiterPos - secondDelimiterPos - 1);
 			std::string text = message.substr(thirdDelimiterPos + 1, fourthDelimiterPos - thirdDelimiterPos - 1);
 
-			// Выводим time, from, to и text на экран
-			std::cout << "[" << time << "] " << "От " << from << " для " << to <<": \n\t-----> " << text << std::endl;
+			// Р’С‹РІРѕРґРёРј time, from, to Рё text РЅР° СЌРєСЂР°РЅ
+			std::cout << "[" << time << "] " << "РћС‚ " << from << " РґР»СЏ " << to <<": \n\t-----> " << text << std::endl;
 		}
 	}
 }
-//Показать список пользователей
+//РџРѕРєР°Р·Р°С‚СЊ СЃРїРёСЃРѕРє РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№
 void Chat::showAllUsers(NetworkClient& client)
 {
 	std::vector<std::string> users;
 
 	users = client.loadAllUsersFromDB();
 
-	std::cout << "\n\tСписок пользователей:\n" << std::endl;
+	std::cout << "\n\tРЎРїРёСЃРѕРє РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№:\n" << std::endl;
 	for (const std::string& user : users)
 	{
-		// Ищем позицию разделителя '|'
+		// РС‰РµРј РїРѕР·РёС†РёСЋ СЂР°Р·РґРµР»РёС‚РµР»СЏ '|'
 		size_t delimiterPos = user.find('|');
 
 		if (delimiterPos != std::string::npos)
 		{
-			// Извлекаем имя пользователя и статус из строки
+			// РР·РІР»РµРєР°РµРј РёРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ Рё СЃС‚Р°С‚СѓСЃ РёР· СЃС‚СЂРѕРєРё
 			std::string name = user.substr(0, delimiterPos);
 			std::string status = user.substr(delimiterPos + 1);
 
-			// Выводим имя пользователя и его статус на экран
+			// Р’С‹РІРѕРґРёРј РёРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ Рё РµРіРѕ СЃС‚Р°С‚СѓСЃ РЅР° СЌРєСЂР°РЅ
 			std::cout << name << " [" << (status == "1" ? "online" : "offline") << "]" << std::endl;
 		}
 	}
 }
-//расширенный список пользователей, включая заблокированных
+//СЂР°СЃС€РёСЂРµРЅРЅС‹Р№ СЃРїРёСЃРѕРє РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№, РІРєР»СЋС‡Р°СЏ Р·Р°Р±Р»РѕРєРёСЂРѕРІР°РЅРЅС‹С…
 void Chat::showUsersInfo(NetworkClient& client)
 {
 	std::vector<std::string> users;
 
 	users = client.loadAllUsersInfo();
 	
-	std::cout << "\n\tСписок пользователей:\n" << std::endl;
+	std::cout << "\n\tРЎРїРёСЃРѕРє РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№:\n" << std::endl;
 	for (const std::string& user : users)
 	{
-		// Ищем позиции разделителей '|'
+		// РС‰РµРј РїРѕР·РёС†РёРё СЂР°Р·РґРµР»РёС‚РµР»РµР№ '|'
 		size_t firstDelimiterPos = user.find('|');
 		size_t secondDelimiterPos = user.find('|', firstDelimiterPos + 1);
 		size_t thirdDelimiterPos = user.find('|', secondDelimiterPos + 1);
@@ -313,64 +313,64 @@ void Chat::showUsersInfo(NetworkClient& client)
 			secondDelimiterPos != std::string::npos &&
 			thirdDelimiterPos != std::string::npos)
 		{
-			// Извлекаем имя пользователя, статус и информацию о бане из строки
+			// РР·РІР»РµРєР°РµРј РёРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ, СЃС‚Р°С‚СѓСЃ Рё РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ Р±Р°РЅРµ РёР· СЃС‚СЂРѕРєРё
 			std::string name = user.substr(0, firstDelimiterPos);
 			std::string status = user.substr(firstDelimiterPos + 1, secondDelimiterPos - firstDelimiterPos - 1);
 			std::string bann = user.substr(secondDelimiterPos + 1, thirdDelimiterPos - secondDelimiterPos - 1);
 
-			// Выводим имя пользователя и его статус на экран
+			// Р’С‹РІРѕРґРёРј РёРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ Рё РµРіРѕ СЃС‚Р°С‚СѓСЃ РЅР° СЌРєСЂР°РЅ
 			std::cout << name << " [" << (status == "1" ? "online" : "offline") << "] " << " [" << (bann == "1" ? "banned" : "not banned") << "] " << std::endl;
 		}
 	}
 }
-//блокировка пользователя
+//Р±Р»РѕРєРёСЂРѕРІРєР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 void Chat::setUserBanned(NetworkClient& client, bool bannStatus)
 {
 	std::string nameForBann;
-	std::cout << "\nВведите имя пользователя:" << std::endl;
+	std::cout << "\nР’РІРµРґРёС‚Рµ РёРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ:" << std::endl;
 	std::cin >> nameForBann;
 
 	if ((client.checkUserExists(nameForBann) == "ue|Exists") && bannStatus) 
 	{
 		client.setBannStatus(nameForBann, bannStatus);
-		std::cout << "\nПользователь " << nameForBann << " заблокирован" << std::endl;
+		std::cout << "\nРџРѕР»СЊР·РѕРІР°С‚РµР»СЊ " << nameForBann << " Р·Р°Р±Р»РѕРєРёСЂРѕРІР°РЅ" << std::endl;
 	}
 	else if ((client.checkUserExists(nameForBann) == "ue|Exists") && !bannStatus)
 	{
 		client.setBannStatus(nameForBann, bannStatus);
-		std::cout << "\nПользователь " << nameForBann << " разблокирован" << std::endl;
+		std::cout << "\nРџРѕР»СЊР·РѕРІР°С‚РµР»СЊ " << nameForBann << " СЂР°Р·Р±Р»РѕРєРёСЂРѕРІР°РЅ" << std::endl;
 	}
 	else {
-		std::cout<< "\nПользователь " << nameForBann << " не найден в базе данных" << std::endl;
+		std::cout<< "\nРџРѕР»СЊР·РѕРІР°С‚РµР»СЊ " << nameForBann << " РЅРµ РЅР°Р№РґРµРЅ РІ Р±Р°Р·Рµ РґР°РЅРЅС‹С…" << std::endl;
 	}
 }
-//Написать сообщение
+//РќР°РїРёСЃР°С‚СЊ СЃРѕРѕР±С‰РµРЅРёРµ
 void Chat::addMessage(NetworkClient& client) 
 {
 	std::string from = getCurrentUserName();
 	std::string to;
 	std::string text;
 
-	std::cout << "\nВведите имя пользователя или all - отпрвить сообщение Всем:\n" << std::endl;
+	std::cout << "\nР’РІРµРґРёС‚Рµ РёРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РёР»Рё all - РѕС‚РїСЂРІРёС‚СЊ СЃРѕРѕР±С‰РµРЅРёРµ Р’СЃРµРј:\n" << std::endl;
 	std::cin >> to;
 	if (client.checkUserExists(to) == "ue|Exists") 
 	{
-		std::cout << "\nНапишите текст сообщения: \n" << std::endl;
+		std::cout << "\nРќР°РїРёС€РёС‚Рµ С‚РµРєСЃС‚ СЃРѕРѕР±С‰РµРЅРёСЏ: \n" << std::endl;
 		std::cin.ignore();
 		getline(std::cin, text);
 
 		if (to == "all" || to == "All" || to == "ALL")
 		{
-			client.sendMessageToALL(from, to, text); //для всех
+			client.sendMessageToALL(from, to, text); //РґР»СЏ РІСЃРµС…
 		}
 		else
 		{
-			client.sendMessageToDB(from, to, text); //для пользователя
+			client.sendMessageToDB(from, to, text); //РґР»СЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 		}
 	}
 	else 
 	{
-		std::cout << "\nТакой пользователь не найден" << std::endl;
+		std::cout << "\nРўР°РєРѕР№ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ РЅРµ РЅР°Р№РґРµРЅ" << std::endl;
 	}
 	
 }
@@ -378,14 +378,14 @@ void Chat::showSettingsMenu(Settings& settings)
 {
 	char choice;
 	std::string value;
-	std::cout << "\n1 - Изменить IP-адрес\n2 - Изменить номер порта\n3 - Назад\n" << std::endl;
+	std::cout << "\n1 - РР·РјРµРЅРёС‚СЊ IP-Р°РґСЂРµСЃ\n2 - РР·РјРµРЅРёС‚СЊ РЅРѕРјРµСЂ РїРѕСЂС‚Р°\n3 - РќР°Р·Р°Рґ\n" << std::endl;
 
 	std::cin >> choice;
 
 	switch (choice)
 	{
 	case ('1'):
-		std::cout << "\nВведите новый IP-адрес: ";
+		std::cout << "\nР’РІРµРґРёС‚Рµ РЅРѕРІС‹Р№ IP-Р°РґСЂРµСЃ: ";
 		std::cin.clear();
 		std::cin >> value;
 
@@ -394,7 +394,7 @@ void Chat::showSettingsMenu(Settings& settings)
 
 		break;
 	case ('2'):
-		std::cout << "\nВведите новый номер порта: ";
+		std::cout << "\nР’РІРµРґРёС‚Рµ РЅРѕРІС‹Р№ РЅРѕРјРµСЂ РїРѕСЂС‚Р°: ";
 		std::cin.clear();
 
 		std::cin >> value;
@@ -405,7 +405,7 @@ void Chat::showSettingsMenu(Settings& settings)
 		}
 		else
 		{
-			std::cout << "\nНедопустимый порт" << std::endl;
+			std::cout << "\nРќРµРґРѕРїСѓСЃС‚РёРјС‹Р№ РїРѕСЂС‚" << std::endl;
 		}
 		break;
 	case('3'):

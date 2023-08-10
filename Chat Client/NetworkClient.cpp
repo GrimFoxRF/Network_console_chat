@@ -1,4 +1,4 @@
-#include "NetworkClient.h"
+п»ї#include "NetworkClient.h"
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -6,17 +6,17 @@
 #include <ws2tcpip.h>
 #include <vector>
 
-//создание сокета
+//СЃРѕР·РґР°РЅРёРµ СЃРѕРєРµС‚Р°
 bool NetworkClient::createSocket()
 {
     clientSocket_ = socket(AF_INET, SOCK_STREAM, 0);
     if (clientSocket_ == INVALID_SOCKET) {
-        std::cerr << "ОШИБКА: сокет не создан" << std::endl;
+        std::cerr << "РћРЁРР‘РљРђ: СЃРѕРєРµС‚ РЅРµ СЃРѕР·РґР°РЅ" << std::endl;
         return false;
     }
     return true;
 }
-//соединение с сервером
+//СЃРѕРµРґРёРЅРµРЅРёРµ СЃ СЃРµСЂРІРµСЂРѕРј
 bool NetworkClient::connectToServer()
 {
     SOCKADDR_IN serverAddress;
@@ -25,12 +25,12 @@ bool NetworkClient::connectToServer()
     inet_pton(AF_INET, ipAddress_.c_str(), &(serverAddress.sin_addr));
 
     if (connect(clientSocket_, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) == SOCKET_ERROR) {
-        std::cerr << "Не удалось установить соединение с сервером" << std::endl;
+        std::cerr << "РќРµ СѓРґР°Р»РѕСЃСЊ СѓСЃС‚Р°РЅРѕРІРёС‚СЊ СЃРѕРµРґРёРЅРµРЅРёРµ СЃ СЃРµСЂРІРµСЂРѕРј" << std::endl;
         return false;
     }
     return true;
 }
-//закрытие сокета
+//Р·Р°РєСЂС‹С‚РёРµ СЃРѕРєРµС‚Р°
 void NetworkClient::closeSocket()
 {
     if (clientSocket_ != INVALID_SOCKET) {
@@ -38,28 +38,28 @@ void NetworkClient::closeSocket()
         clientSocket_ = INVALID_SOCKET;
     }
 }
-//конструктор
+//РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 NetworkClient::NetworkClient(const std::string& ipAddress, int port) : ipAddress_(ipAddress), port_(port), clientSocket_(INVALID_SOCKET) { }
-//деструктор
+//РґРµСЃС‚СЂСѓРєС‚РѕСЂ
 NetworkClient::~NetworkClient()
 {
     stopClient();
     WSACleanup();
 }
-//подключение клиента к серверу
+//РїРѕРґРєР»СЋС‡РµРЅРёРµ РєР»РёРµРЅС‚Р° Рє СЃРµСЂРІРµСЂСѓ
 void NetworkClient::startClient()
 {
     Settings settings;
     settings.loadSettingsFromFile("settings.txt");
 
-    // Получение порта из настроек
+    // РџРѕР»СѓС‡РµРЅРёРµ РїРѕСЂС‚Р° РёР· РЅР°СЃС‚СЂРѕРµРє
     std::string portStr = settings.getSetting("PORT");
     int port = std::stoi(portStr);
 
     port_ = port;
 
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
-        std::cerr << "Ошибка инициализации" << std::endl;
+        std::cerr << "РћС€РёР±РєР° РёРЅРёС†РёР°Р»РёР·Р°С†РёРё" << std::endl;
         return;
     }
 
@@ -74,46 +74,46 @@ void NetworkClient::startClient()
         return;
     }
 
-    std::cout << "Соединение с сервером установлено" << std::endl;
+    std::cout << "РЎРѕРµРґРёРЅРµРЅРёРµ СЃ СЃРµСЂРІРµСЂРѕРј СѓСЃС‚Р°РЅРѕРІР»РµРЅРѕ" << std::endl;
     std::string greeting = "log|admin|admin";
 
 }
-//отключение клиента от сервера
+//РѕС‚РєР»СЋС‡РµРЅРёРµ РєР»РёРµРЅС‚Р° РѕС‚ СЃРµСЂРІРµСЂР°
 void NetworkClient::stopClient()
 {
     closeSocket();
     WSACleanup();
 }
-//отправка тестового сообщения на сервер
+//РѕС‚РїСЂР°РІРєР° С‚РµСЃС‚РѕРІРѕРіРѕ СЃРѕРѕР±С‰РµРЅРёСЏ РЅР° СЃРµСЂРІРµСЂ
 void NetworkClient::sendMessage(SOCKET clientSocket, const std::string& message) 
 {
     send(clientSocket, message.c_str(), message.length(), 0);
-    std::cout << "\nСообщение отправлено: " << message << std::endl;
+    std::cout << "\nРЎРѕРѕР±С‰РµРЅРёРµ РѕС‚РїСЂР°РІР»РµРЅРѕ: " << message << std::endl;
 
     char buffer[MESSAGE_LENGTH] = { 0 };
     recv(clientSocket, buffer, MESSAGE_LENGTH, 0);
     std::string response(buffer);
-    std::cout << "\nОтвет получен: " << response << "\n" << std::endl;
+    std::cout << "\nРћС‚РІРµС‚ РїРѕР»СѓС‡РµРЅ: " << response << "\n" << std::endl;
 }
-//разделение сообщения по символу "|"
+//СЂР°Р·РґРµР»РµРЅРёРµ СЃРѕРѕР±С‰РµРЅРёСЏ РїРѕ СЃРёРјРІРѕР»Сѓ "|"
 bool NetworkClient::parseMessage(const std::string& message, std::vector<std::string>& arguments)
 {
-    //разделитель для аргументов
+    //СЂР°Р·РґРµР»РёС‚РµР»СЊ РґР»СЏ Р°СЂРіСѓРјРµРЅС‚РѕРІ
     const char delimiter = '|';
 
-    //создаем поток для чтения из сообщения
+    //СЃРѕР·РґР°РµРј РїРѕС‚РѕРє РґР»СЏ С‡С‚РµРЅРёСЏ РёР· СЃРѕРѕР±С‰РµРЅРёСЏ
     std::istringstream stream(message);
 
-    //разбиваем сообщение на аргументы по разделителю и сохраняем их в векторе
+    //СЂР°Р·Р±РёРІР°РµРј СЃРѕРѕР±С‰РµРЅРёРµ РЅР° Р°СЂРіСѓРјРµРЅС‚С‹ РїРѕ СЂР°Р·РґРµР»РёС‚РµР»СЋ Рё СЃРѕС…СЂР°РЅСЏРµРј РёС… РІ РІРµРєС‚РѕСЂРµ
     std::string argument;
     while (std::getline(stream, argument, delimiter))
     {
         arguments.push_back(argument);
     }
-    //проверяем, что были извлечены аргументы
+    //РїСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ Р±С‹Р»Рё РёР·РІР»РµС‡РµРЅС‹ Р°СЂРіСѓРјРµРЅС‚С‹
     return !arguments.empty();
 }
-//проверка логина и пароля
+//РїСЂРѕРІРµСЂРєР° Р»РѕРіРёРЅР° Рё РїР°СЂРѕР»СЏ
 std::string NetworkClient::loginToServer(const std::string& login, const std::string& password)
 {
     std::string message = "log|" + login + "|" + password;
@@ -124,7 +124,7 @@ std::string NetworkClient::loginToServer(const std::string& login, const std::st
     std::string response(buffer);
     return response; 
 }
-//запрос имени пользователя
+//Р·Р°РїСЂРѕСЃ РёРјРµРЅРё РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 std::string NetworkClient::askUserName(const std::string& login) 
 {
     std::string message = "n|" + login;
@@ -140,11 +140,11 @@ std::string NetworkClient::askUserName(const std::string& login)
         arguments.clear();
         if (parseMessage(response, arguments))
         {
-            // Проверяем, что получено достаточное количество аргументов
-            if (arguments.size() >= 2) //аргумент 0 - это префикс
+            // РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ РїРѕР»СѓС‡РµРЅРѕ РґРѕСЃС‚Р°С‚РѕС‡РЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ Р°СЂРіСѓРјРµРЅС‚РѕРІ
+            if (arguments.size() >= 2) //Р°СЂРіСѓРјРµРЅС‚ 0 - СЌС‚Рѕ РїСЂРµС„РёРєСЃ
             {
                 std::string name = arguments[1];
-                std::cout << "\nДобро пожаловать, " << name << "\n" << std::endl;
+                std::cout << "\nР”РѕР±СЂРѕ РїРѕР¶Р°Р»РѕРІР°С‚СЊ, " << name << "\n" << std::endl;
                 return name;
             }
             else
@@ -158,7 +158,7 @@ std::string NetworkClient::askUserName(const std::string& login)
         }
     }
 }
-//запрос на регистрацию нового пользователя
+//Р·Р°РїСЂРѕСЃ РЅР° СЂРµРіРёСЃС‚СЂР°С†РёСЋ РЅРѕРІРѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 std::string NetworkClient::registrationNewUser(const std::string& login, const std::string& password, const std::string& name)
 {
     std::string message = "reg|" + login + "|" + password + "|" + name;
@@ -169,7 +169,7 @@ std::string NetworkClient::registrationNewUser(const std::string& login, const s
     std::string response(buffer);
     return response;
 }
-//запрос на установление статуса пользователя
+//Р·Р°РїСЂРѕСЃ РЅР° СѓСЃС‚Р°РЅРѕРІР»РµРЅРёРµ СЃС‚Р°С‚СѓСЃР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 std::string NetworkClient::setUserStatus(const std::string& login, bool status)
 {
     std::string statusStr = status ? "1" : "0";
@@ -183,7 +183,7 @@ std::string NetworkClient::setUserStatus(const std::string& login, bool status)
     std::string response(buffer);
     return response;
 }
-//запрос на отправку сообщения в БД
+//Р·Р°РїСЂРѕСЃ РЅР° РѕС‚РїСЂР°РІРєСѓ СЃРѕРѕР±С‰РµРЅРёСЏ РІ Р‘Р”
 std::string NetworkClient::sendMessageToDB(const std::string& from, const std::string& to, const std::string& text)
 {
     std::string message = "sm|" + from + "|" + to + "|" + text;
@@ -195,15 +195,15 @@ std::string NetworkClient::sendMessageToDB(const std::string& from, const std::s
     std::string response(buffer);
     if (response == "sm|success")
     {
-        std::cout << "\nСообщение доставлено" << std::endl;
+        std::cout << "\nРЎРѕРѕР±С‰РµРЅРёРµ РґРѕСЃС‚Р°РІР»РµРЅРѕ" << std::endl;
     }
     else
     {
-        std::cout << "\nОШИБКА: сообщение не доставлено" << std::endl;
+        std::cout << "\nРћРЁРР‘РљРђ: СЃРѕРѕР±С‰РµРЅРёРµ РЅРµ РґРѕСЃС‚Р°РІР»РµРЅРѕ" << std::endl;
     }
     return response;
 }
-//запрос на отправку сообщения для всех
+//Р·Р°РїСЂРѕСЃ РЅР° РѕС‚РїСЂР°РІРєСѓ СЃРѕРѕР±С‰РµРЅРёСЏ РґР»СЏ РІСЃРµС…
 std::string NetworkClient::sendMessageToALL(const std::string& from, const std::string& to, const std::string& text)
 {
     std::string message = "sma|" + from + "|" + to + "|" + text;
@@ -215,15 +215,15 @@ std::string NetworkClient::sendMessageToALL(const std::string& from, const std::
     std::string response(buffer);
     if (response == "sma|success") 
     {
-        std::cout << "\nСообщение доставлено" << std::endl;
+        std::cout << "\nРЎРѕРѕР±С‰РµРЅРёРµ РґРѕСЃС‚Р°РІР»РµРЅРѕ" << std::endl;
     }
     else 
     {
-        std::cout << "\nОШИБКА: сообщение не доставлено" << std::endl;
+        std::cout << "\nРћРЁРР‘РљРђ: СЃРѕРѕР±С‰РµРЅРёРµ РЅРµ РґРѕСЃС‚Р°РІР»РµРЅРѕ" << std::endl;
     }
     return response;
 }
-//проверка существует ли пользователь, кому отправлено сообщение
+//РїСЂРѕРІРµСЂРєР° СЃСѓС‰РµСЃС‚РІСѓРµС‚ Р»Рё РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ, РєРѕРјСѓ РѕС‚РїСЂР°РІР»РµРЅРѕ СЃРѕРѕР±С‰РµРЅРёРµ
 std::string NetworkClient::checkUserExists(const std::string& to)
 {
     std::string message = "ue|" + to;
@@ -236,7 +236,7 @@ std::string NetworkClient::checkUserExists(const std::string& to)
 
     return response;
 }
-//вывод сообщений для всех
+//РІС‹РІРѕРґ СЃРѕРѕР±С‰РµРЅРёР№ РґР»СЏ РІСЃРµС…
 std::vector<std::string> NetworkClient::loadMessagesToAll()
 {
     std::string message = "lma|all";
@@ -264,7 +264,7 @@ std::vector<std::string> NetworkClient::loadMessagesToAll()
         return loadMessages;
     }
 }
-//вывод сообщений от и для пользователя
+//РІС‹РІРѕРґ СЃРѕРѕР±С‰РµРЅРёР№ РѕС‚ Рё РґР»СЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 std::vector<std::string> NetworkClient::loadMessagesToUser(const std::string& to)
 {
     std::string message = "lmu|" + to;
@@ -294,7 +294,7 @@ std::vector<std::string> NetworkClient::loadMessagesToUser(const std::string& to
         return loadMessages;
     }
 }
-//вывод списка пользователей
+//РІС‹РІРѕРґ СЃРїРёСЃРєР° РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№
 std::vector<std::string> NetworkClient::loadAllUsersFromDB()
 {
     std::string message = "all|";
@@ -323,7 +323,7 @@ std::vector<std::string> NetworkClient::loadAllUsersFromDB()
         }
     }
 }
-//вывод списка пользователей, включая заблокированных
+//РІС‹РІРѕРґ СЃРїРёСЃРєР° РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№, РІРєР»СЋС‡Р°СЏ Р·Р°Р±Р»РѕРєРёСЂРѕРІР°РЅРЅС‹С…
 std::vector<std::string> NetworkClient::loadAllUsersInfo()
 {
     std::string message = "inf|";
@@ -353,7 +353,7 @@ std::vector<std::string> NetworkClient::loadAllUsersInfo()
         }
     }
 }
-//блокировка пользователя
+//Р±Р»РѕРєРёСЂРѕРІРєР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 std::string NetworkClient::setBannStatus(const std::string& name, bool bann)
 {
     std::string isBanned = bann ? "1" : "0";

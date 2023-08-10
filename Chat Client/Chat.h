@@ -1,4 +1,4 @@
-//Основной функционал чата
+п»ї//РћСЃРЅРѕРІРЅРѕР№ С„СѓРЅРєС†РёРѕРЅР°Р» С‡Р°С‚Р°
 #pragma once
 #include <string>
 #include <vector>
@@ -18,31 +18,31 @@ public:
 	void start();
 	bool chatWork() const;
 	
-	void showMainMenu(NetworkClient& client, Settings& settings); // Главное меню
-	void showLoginMenu(NetworkClient& client); // Меню входа пользователя
-	void showRegistrationMenu(NetworkClient& client); // Меню регистрации нового пользователя
+	void showMainMenu(NetworkClient& client, Settings& settings); // Р“Р»Р°РІРЅРѕРµ РјРµРЅСЋ
+	void showLoginMenu(NetworkClient& client); // РњРµРЅСЋ РІС…РѕРґР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
+	void showRegistrationMenu(NetworkClient& client); // РњРµРЅСЋ СЂРµРіРёСЃС‚СЂР°С†РёРё РЅРѕРІРѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 
-	void setUserOnline(bool value) { _userOnline = value; }//установить что пользователь находится в чате
-	bool getUserOnline() { return _userOnline; }//показывает  находится ли пользователь в чате
+	void setUserOnline(bool value) { _userOnline = value; }//СѓСЃС‚Р°РЅРѕРІРёС‚СЊ С‡С‚Рѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ РЅР°С…РѕРґРёС‚СЃСЏ РІ С‡Р°С‚Рµ
+	bool getUserOnline() { return _userOnline; }//РїРѕРєР°Р·С‹РІР°РµС‚  РЅР°С…РѕРґРёС‚СЃСЏ Р»Рё РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ РІ С‡Р°С‚Рµ
 
-	void setCurrentUserLogin(std::string login) { _currentUserLogin = login; }//устанавливает значение текущего пользователя по логину
-	std::string getCurrentUserLogin() { return _currentUserLogin; }//выдает логин текущего пользователя
+	void setCurrentUserLogin(std::string login) { _currentUserLogin = login; }//СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ Р·РЅР°С‡РµРЅРёРµ С‚РµРєСѓС‰РµРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РїРѕ Р»РѕРіРёРЅСѓ
+	std::string getCurrentUserLogin() { return _currentUserLogin; }//РІС‹РґР°РµС‚ Р»РѕРіРёРЅ С‚РµРєСѓС‰РµРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 
-	void setCurrentUser(std::string name) { _currentUserName = name; }//устанавливает значение текущего пользователя по имени
-	std::string getCurrentUserName() { return _currentUserName; }//выдает имя текущего пользователя
+	void setCurrentUser(std::string name) { _currentUserName = name; }//СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ Р·РЅР°С‡РµРЅРёРµ С‚РµРєСѓС‰РµРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РїРѕ РёРјРµРЅРё
+	std::string getCurrentUserName() { return _currentUserName; }//РІС‹РґР°РµС‚ РёРјСЏ С‚РµРєСѓС‰РµРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 
-	void showAdminMenu(NetworkClient& client);//меню с функционалом администратора
-	void showChatMenu(NetworkClient& client);//меню пользователя
+	void showAdminMenu(NetworkClient& client);//РјРµРЅСЋ СЃ С„СѓРЅРєС†РёРѕРЅР°Р»РѕРј Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂР°
+	void showChatMenu(NetworkClient& client);//РјРµРЅСЋ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 
-	void showGeneralChat(NetworkClient& client);//Общий чат
-	void showUserChat(NetworkClient& client);//Личный чат
-	void showAllUsers(NetworkClient& client);//Показать список пользователей
-	void addMessage(NetworkClient& client);//Написать сообщение
-	//функции Админа
-	void showUsersInfo(NetworkClient& client);// информация для администратора о пользователях
-	void setUserBanned(NetworkClient& client, bool bannStatus);//блокировка пользователя
+	void showGeneralChat(NetworkClient& client);//РћР±С‰РёР№ С‡Р°С‚
+	void showUserChat(NetworkClient& client);//Р›РёС‡РЅС‹Р№ С‡Р°С‚
+	void showAllUsers(NetworkClient& client);//РџРѕРєР°Р·Р°С‚СЊ СЃРїРёСЃРѕРє РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№
+	void addMessage(NetworkClient& client);//РќР°РїРёСЃР°С‚СЊ СЃРѕРѕР±С‰РµРЅРёРµ
+	//С„СѓРЅРєС†РёРё РђРґРјРёРЅР°
+	void showUsersInfo(NetworkClient& client);// РёРЅС„РѕСЂРјР°С†РёСЏ РґР»СЏ Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂР° Рѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏС…
+	void setUserBanned(NetworkClient& client, bool bannStatus);//Р±Р»РѕРєРёСЂРѕРІРєР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 
-	void showSettingsMenu(Settings& settings);//меню настроек клиента
+	void showSettingsMenu(Settings& settings);//РјРµРЅСЋ РЅР°СЃС‚СЂРѕРµРє РєР»РёРµРЅС‚Р°
 };
 
 
