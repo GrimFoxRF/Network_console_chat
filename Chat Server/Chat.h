@@ -24,8 +24,8 @@ public:
 
 	void showMainMenu(DataBase& db); // Главное меню
 	void showLoginMenu(DataBase& db); // Меню входа пользователя
-	void showServerMenu(DataBase& db, Settings& settings); //Меню чата, с выбором действий
-	void showSettingsMenu(Settings& settings);//меню настроек сервера
+	void showServerMenu(DataBase& db, Settings& settings, int port, Logger& logger); //Меню чата, с выбором действий
+	void showSettingsMenu(Settings& settings, Logger& logger);//меню настроек сервера
 
 	bool getAdminOnline() const { return _adminOnline; }
 

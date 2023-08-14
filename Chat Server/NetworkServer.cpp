@@ -1,4 +1,5 @@
 ﻿#include "NetworkServer.h"
+#include "Logger.h"
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -7,7 +8,7 @@
 #include <thread>
 #include <functional>
 
-NetworkServer::NetworkServer(int port) : port_(port), serverSocket_(INVALID_SOCKET), clientSocket_(INVALID_SOCKET) { } // Конструктор класса
+NetworkServer::NetworkServer(int port) : port_(port), logger("log.txt"), serverSocket_(INVALID_SOCKET), clientSocket_(INVALID_SOCKET) { } // Конструктор класса
 
 NetworkServer::~NetworkServer() //деструктор
 {
@@ -121,7 +122,7 @@ void NetworkServer::closeServerSocket()
     }
 }
 //прием сообщения от клиента и отправка ответа
-void NetworkServer::handleClient(SOCKET clientSocket, DataBase& db)
+void NetworkServer::handleClient(SOCKET clientSocket, DataBase& db)// Logger& logger
 {
     char buffer[MESSAGE_LENGTH] = { 0 };
     bool connect = true;
@@ -352,6 +353,9 @@ void NetworkServer::handleClient(SOCKET clientSocket, DataBase& db)
                     std::string response = "sma|";
                     if (nameFrom && nameTo) 
                     {
+                        std::string logMessage = "[" + getCurrentTime() + "]" + " от " + from + " для " + to + ": " + text;
+                        logger.writeLogToFile(logMessage);//запись сообщения в файл log.txt
+
                         db.addMessageToAll(from, to, text, true);
                         std::string response = "sma|success";
                         send(clientSocket, response.c_str(), response.length(), 0);
@@ -387,6 +391,9 @@ void NetworkServer::handleClient(SOCKET clientSocket, DataBase& db)
                     std::string response = "sm|";
                     if (nameFrom && nameTo && !isBanned)
                     {
+                        std::string logMessage = "[" + getCurrentTime() + "]" + " от " + from + " для " + to + ": " + text;
+                        logger.writeLogToFile(logMessage);//запись сообщения в файл log.txt
+
                         db.addMessageToDB(from, to, text);
                         std::string response = "sm|success";
                         send(clientSocket, response.c_str(), response.length(), 0);

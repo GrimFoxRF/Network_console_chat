@@ -4,6 +4,7 @@
 #include <Windows.h>
 #include "Chat.h"
 #include "Utility.h"
+#include "Logger.h"
 
 int main() 
 {
@@ -12,6 +13,7 @@ int main()
 	setlocale(LC_ALL, "Russian");
 
 	Chat chat; //объект чат создан
+	Logger logger("log.txt");
 	DataBase db; //объект база данных создана
 	Settings settings;
 
@@ -30,7 +32,7 @@ int main()
 		chat.showMainMenu(db); //Главное меню сервера
 		while (chat.getAdminOnline())
 		{
-			chat.showServerMenu(db, settings); //меню управления сервером
+			chat.showServerMenu(db, settings, port, logger); //меню управления сервером
 		}
 	}
 

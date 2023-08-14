@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <limits>
 #include <string>
+#include <thread>
 #include "Chat.h"
 #include "Utility.h"
 #include "NetworkServer.h"
@@ -127,13 +128,13 @@ void Chat::showLoginMenu(DataBase& db)
 	}
 }
 //Меню сервера
-void Chat::showServerMenu(DataBase& db, Settings& settings)
+void Chat::showServerMenu(DataBase& db, Settings& settings, int port, Logger& logger)
 {
 	char choice;
 
 	std::cout << "\nПользователь: Администратор" << std::endl;
 
-	NetworkServer server;
+	NetworkServer server(port);
 
 	while (_adminOnline)
 	{
@@ -143,11 +144,11 @@ void Chat::showServerMenu(DataBase& db, Settings& settings)
 
 		switch (choice)
 		{
-		case ('1'):
+		case ('1'): 
 			serverStart(server);
 			break;
 		case ('2'):
-			showSettingsMenu(settings);
+			showSettingsMenu(settings, logger);
 			break;
 		case ('3'):
 			std::cout << "\tВыход\n" << std::endl;
@@ -155,18 +156,19 @@ void Chat::showServerMenu(DataBase& db, Settings& settings)
 			_adminOnline = false;
 			break;
 		default:
-
+			db.setUserStatus(getCurrentUser(), false);
+			_adminOnline = false;
 			break;
 		}
 		
 	}
 }
 
-void Chat::showSettingsMenu(Settings& settings)
+void Chat::showSettingsMenu(Settings& settings, Logger& logger)
 {
 	char choice;
 	std::string value;
-	std::cout << "\n1 - Вести новый порт\n2 - Назад\n" << std::endl;
+	std::cout << "\n1 - Вести новый порт\n2 - Логи сообщений пользователей\n3 - Назад\n" << std::endl;
 
 	std::cin >> choice;
 	
@@ -188,6 +190,9 @@ void Chat::showSettingsMenu(Settings& settings)
 		}
 		break;
 	case('2'):
+		logger.readLogFromFile();
+		break;
+	case('3'):
 
 		break;
 	default:
